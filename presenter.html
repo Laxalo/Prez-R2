@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prez R2 — présentateur</title>
+<link rel="icon" href="assets/logo-transparent.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/slides.css">
+<link rel="stylesheet" href="css/chapitre.css">
+<link rel="stylesheet" href="css/presenter.css">
+<link rel="stylesheet" href="css/pointer.css">
+</head>
+<body>
+
+<div class="presenter">
+  <header class="presenter__toolbar">
+    <p class="presenter__title" id="presenterTitle">Prez R2 — présentateur</p>
+    <div class="presenter__nav" id="presenterNav">
+      <button type="button" class="presenter__nav-btn" id="navPrev" aria-label="Étape précédente">‹</button>
+      <button type="button" class="presenter__nav-btn" id="navNext" aria-label="Étape suivante">›</button>
+    </div>
+    <div class="presenter__timer" id="presenterTimer" title="Heure actuelle · temps écoulé depuis l'ouverture">
+      <span class="presenter__clock" id="presenterClock">--:--</span>
+      <span class="presenter__timer-sep" aria-hidden="true">·</span>
+      <span class="presenter__elapsed" id="presenterElapsed">00:00</span>
+    </div>
+    <button type="button" class="presenter__open-btn" id="openAudience">Ouvrir l'écran auditoire</button>
+  </header>
+
+  <!-- Repère slide/état/id, jamais tronqué (contrairement à
+       presenter__title, réduit par ellipsis dans une toolbar étroite) —
+       pour désigner précisément une slide/un état lors d'un retour. -->
+  <p class="presenter__position" id="presenterPosition"></p>
+
+  <div class="presenter__main">
+    <section class="presenter__current presenter-preview" id="presenterCurrent"></section>
+
+    <div class="splitter splitter--x" id="splitterSidebar" role="separator" aria-orientation="vertical" aria-label="Redimensionner le panneau latéral" tabindex="0"></div>
+
+    <aside class="presenter__side">
+      <div class="presenter__block presenter__block--next">
+        <p class="presenter__block-label">Slide suivante</p>
+        <div class="presenter__next presenter-preview" id="presenterNext"></div>
+      </div>
+
+      <div class="splitter splitter--y" id="splitterNext" role="separator" aria-orientation="horizontal" aria-label="Redimensionner l'aperçu de la slide suivante" tabindex="0"></div>
+
+      <div class="presenter__block presenter__block--grow">
+        <p class="presenter__block-label">Notes</p>
+        <textarea class="presenter__notes" id="presenterNotes" placeholder="Notes pour cette slide…"></textarea>
+      </div>
+    </aside>
+  </div>
+
+  <div class="splitter splitter--y" id="splitterThumbs" role="separator" aria-orientation="horizontal" aria-label="Redimensionner le bandeau de miniatures" tabindex="0"></div>
+
+  <nav class="presenter__thumbs" id="presenterThumbs" aria-label="Navigation rapide"></nav>
+</div>
+
+<div class="pointer-dot" id="presenterPointerDot"></div>
+
+<script type="module" src="js/presenter.js"></script>
+</body>
+</html>

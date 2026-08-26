@@ -1,0 +1,481 @@
+/* Chrome de l'outil (poste présentateur) — pas du contenu de slide, donc
+   en unités classiques (rem/vw), pas cqw. Palette/rayon/bordures alignés
+   sur la charte (voir CLAUDE.md). */
+
+/* Tailles des panneaux redimensionnables : posées sur <html> par
+   js/splitter.js (valeur mémorisée en localStorage, sinon la valeur par
+   défaut passée à initSplitter) — ne pas les redéclarer ici, une
+   déclaration sur .presenter primerait sur la valeur héritée et rendrait
+   le redimensionnement muet. */
+
+.presenter {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-paper-alt);
+}
+
+.presenter__toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1.25rem;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+
+.presenter__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--color-ink);
+}
+
+/* Horloge murale + chrono écoulé depuis l'ouverture (voir
+   presenter.js:setupTimer) — repère de temps pour le présentateur en
+   RDV, pas un élément de la charte client. */
+.presenter__timer {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-paper-alt);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.presenter__clock {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.presenter__timer-sep {
+  color: var(--color-line);
+}
+
+.presenter__elapsed {
+  color: var(--color-ink-soft);
+}
+
+/* Navigation tactile (étape suivante/précédente — révélation progressive
+   ou changement de slide, voir presenter.js goNext/goPrev) : le clavier
+   (flèches) reste le principal moyen de naviguer sur un poste de
+   présentation classique, mais un poste consulté sur mobile (pas de
+   clavier) n'a que ces boutons — plus le tap direct sur la scène
+   courante (voir setupNav) pour avancer. */
+.presenter__nav {
+  flex: none;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.presenter__nav-btn {
+  flex: none;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 1.15rem;
+  line-height: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.presenter__nav-btn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.presenter__open-btn {
+  flex: none;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.presenter__open-btn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.presenter__open-btn.is-active {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+/* Sous ce seuil, la fenêtre popup ouverte par ce bouton (voir
+   presenter.js:openAudienceWindow) n'a plus de sens — un mobile n'a pas
+   de second écran à y projeter — et la toolbar est trop étroite pour
+   title + nav + timer + ce bouton à la fois : on lui rend sa place. */
+@media (max-width: 780px) {
+  .presenter__open-btn {
+    display: none;
+  }
+}
+
+/* Repère slide/état/id (voir presenter.html) : bandeau plein largeur
+   dédié plutôt qu'une place de plus à trouver dans la toolbar — jamais
+   tronqué, contrairement à .presenter__title (ellipsis dès que la
+   toolbar est étroite). */
+.presenter__position {
+  flex: none;
+  margin: 0;
+  padding: 0.35rem 1.25rem;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-paper-alt);
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.presenter__position strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.presenter__main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  padding: 1rem 1.25rem;
+}
+
+.presenter__current {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  /* Centrage + ajustement de .slide__stage : voir .presenter-preview. */
+}
+
+/* Pointeur laser actif (touche L, voir presenter.js:setupPointer) :
+   curseur système masqué, le point .pointer-dot (css/pointer.css) le
+   remplace visuellement pendant le survol de la scène. */
+.presenter__current.is-pointer-active {
+  cursor: none;
+}
+
+.presenter__side {
+  flex: none;
+  width: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Sous ce seuil, .presenter__side gardant sa largeur fixe (--sidebar-width,
+   ~340px par défaut) ne laisserait quasiment plus rien à .presenter__current
+   sur un écran de mobile — la scène courante, pourtant l'essentiel de ce
+   panneau, deviendrait invisible. On empile verticalement (courante en
+   premier, pleine largeur) plutôt que côte à côte ; le panneau bascule en
+   défilement pour absorber la hauteur cumulée. La poignée de
+   redimensionnement horizontal (--x) n'a plus de sens dans un empilement,
+   elle est masquée ; --next/--thumbs restent utilisables (axe encore
+   pertinent : hauteur des blocs empilés). */
+@media (max-width: 780px) {
+  .presenter__main {
+    flex-direction: column;
+    padding: 0.75rem;
+    gap: 0.75rem;
+    overflow-y: auto;
+  }
+
+  .presenter__current {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    padding: 0;
+  }
+
+  .splitter--x {
+    display: none;
+  }
+
+  .presenter__side {
+    width: 100%;
+  }
+}
+
+.presenter__block {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.presenter__block--next {
+  flex: none;
+  height: var(--next-height);
+  overflow: hidden;
+}
+
+.presenter__next {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* Remplit la hauteur restante de .presenter__block--next (sous le
+     label) plutôt que de se dimensionner à son contenu — sans ça,
+     .presenter-preview n'a pas de hauteur définie à interroger. */
+}
+
+.presenter__block--grow {
+  flex: 1 1 auto;
+}
+
+.presenter__block-label {
+  flex: none;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-soft);
+  margin-bottom: 0.5rem;
+}
+
+.presenter__notes {
+  flex: 1 1 auto;
+  min-height: 120px;
+  resize: none;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-paper);
+  padding: 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+  box-sizing: border-box;
+}
+
+.presenter__notes:focus {
+  outline: none;
+  border-color: var(--color-gold);
+}
+
+.presenter__thumbs {
+  flex: none;
+  height: var(--thumbs-height);
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.6rem 1.25rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-top: 1px solid var(--color-line);
+  background: var(--color-paper);
+  box-sizing: border-box;
+}
+
+.presenter-thumb {
+  flex: 0 0 128px;
+  /* Sans ça, le minimum automatique des enfants flex (min-width:auto)
+     laisse le libellé de titre (.presenter-thumb__label, en nowrap)
+     repousser toute la carte au-delà de ses 128px dès qu'un titre est
+     un peu long — flex-basis seul ne suffit pas à le verrouiller. */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.presenter-thumb__preview {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: calc(var(--radius) + 2px);
+  background: none;
+  cursor: pointer;
+}
+
+.presenter-thumb.is-current .presenter-thumb__preview {
+  border-color: var(--color-gold);
+}
+
+.presenter-thumb.is-hidden .presenter-thumb__preview {
+  opacity: 0.4;
+}
+
+.presenter-thumb__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.presenter-thumb__label {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.presenter-thumb__toggle {
+  flex: none;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  color: var(--color-ink-soft);
+  font-size: 0.7rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.presenter-thumb__toggle:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+/* Poignées de redimensionnement entre panneaux — voir js/splitter.js.
+   Zone de prise large (9px) mais trait visible fin (1px), centrée sur la
+   frontière réelle entre les deux panneaux via une marge négative : elle
+   ne pousse pas les panneaux voisins, elle se contente d'agrandir la
+   cible cliquable autour du trait. */
+
+.splitter {
+  flex: none;
+  position: relative;
+  z-index: 5;
+}
+
+.splitter--x {
+  width: 9px;
+  margin: 0 -4px;
+  cursor: col-resize;
+}
+
+.splitter--y {
+  height: 9px;
+  margin: -4px 0;
+  cursor: row-resize;
+}
+
+.splitter::after {
+  content: "";
+  position: absolute;
+  background: var(--color-line);
+  transition: background 0.15s ease;
+}
+
+.splitter--x::after {
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+}
+
+.splitter--y::after {
+  left: 0;
+  right: 0;
+  top: 4px;
+  height: 1px;
+}
+
+.splitter:hover::after,
+.splitter.is-active::after {
+  background: var(--color-gold);
+}
+
+body.is-resizing-x,
+body.is-resizing-x * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+body.is-resizing-y,
+body.is-resizing-y * {
+  cursor: row-resize !important;
+  user-select: none !important;
+}
+
+/* Panneaux d'aperçu vivant (slide courante, slide suivante) — même
+   verrou qu'en slides.css (.slide > .slide__stage) : rendu inconditionnel
+   à la largeur de référence (1280px, où cqw et planchers de lisibilité
+   se comportent toujours pareil) puis réduit globalement par
+   transform:scale, jamais recalculé selon la taille réelle du panneau —
+   sinon les cqw de .slide__stage réagiraient à CETTE taille-là (mise à
+   jour continue pendant le glisser d'un splitter), jamais tout à fait la
+   même d'un réglage à l'autre. .presenter-preview est un container query
+   de type "size" (largeur ET hauteur interrogeables) : le facteur choisit
+   la plus petite des deux mises à l'échelle possibles (100cqw/1280px ou
+   100cqh/720px) — jamais de dépassement, quelle que soit la forme du
+   panneau. */
+
+.presenter-preview {
+  container-type: size;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+.presenter-preview .slide__stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1280px;
+  max-width: none;
+  max-height: none;
+  transform-origin: center center;
+  transform: translate(-50%, -50%) scale(min(100cqw / 1280px, 100cqh / 720px));
+}
+
+/* Aperçu réduit générique (miniatures uniquement) — voir js/deck.js :
+   renderPreviewHtml(). Cadre unique, de taille fixe et identique pour
+   toutes les vignettes quel que soit le gabarit affiché (un seul
+   .stage-preview réutilisé partout, pas un cadre par type de slide) :
+   width:100% + aspect-ratio verrouille la boîte, indépendamment de tout
+   contenu interne ; overflow:hidden la contient.
+
+   Contrairement à .presenter-preview ci-dessus, .slide__stage n'est PAS
+   rendu nativement à la taille du cadre (~128px) : à cette taille, les
+   planchers de lisibilité type font-size:max(Npx, Mcqw) — pensés pour
+   des panneaux de taille normale — empêchent le texte de rétrécir sous
+   ce plancher et il déborde, rogné par overflow:hidden. .slide__stage
+   est donc rendu à sa largeur de référence normale
+   (--stage-preview-ref-width, 1280px — le canevas de référence du
+   système, voir CLAUDE.md "Mise à l'échelle"), où ses cqw internes et
+   ses planchers se comportent normalement, texte inclus ; le tout est
+   ensuite réduit globalement par un simple transform:scale — l'équivalent
+   d'une capture d'écran réduite, sans repasser par aucun cqw/plancher
+   interne à la petite taille. */
+
+.stage-preview {
+  --stage-preview-ref-width: 1280px;
+  container-type: size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+
+.stage-preview .slide__stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--stage-preview-ref-width);
+  max-width: none;
+  max-height: none;
+  transform-origin: top left;
+  transform: scale(calc(100cqw / var(--stage-preview-ref-width)));
+}

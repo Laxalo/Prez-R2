@@ -1,0 +1,601 @@
+/* ---------- Deck shell ----------
+   Chaque slide est verrouillée sur un ratio 16:9 fixe (.slide__stage),
+   comme une vraie diapositive : elle s'adapte à l'écran sans jamais
+   dépasser la hauteur disponible, ni changer de forme.
+
+   Rendu inconditionnel à la largeur de référence (1280px, où les cqw et
+   les planchers de lisibilité font-size:max(Npx, Mcqw) — voir l'en-tête
+   de chapitre.css — se comportent tous deux exactement pareil), puis
+   réduit globalement par transform:scale — jamais de recalcul de mise
+   en page selon l'écran. Avant, ce repli n'existait que sous un seuil de
+   taille (mobile) ; au-dessus, .slide__stage prenait sa taille réelle et
+   ses cqw réagissaient à CETTE largeur-là, jamais tout à fait la même
+   d'un écran à l'autre — d'où des écarts visuellement différents
+   (planchers atteints ou non) selon le format. Toujours actif
+   maintenant : la scène rendue est bit pour bit identique quelle que
+   soit la fenêtre, seul le facteur d'agrandissement change (même
+   principe que .stage-preview pour les miniatures, voir presenter.css). */
+
+.deck {
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+
+.slide {
+  --mobile-gutter: 12px;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: block;
+  position: relative;
+  padding: 0;
+  box-sizing: border-box;
+  background: var(--color-paper-alt);
+}
+
+.slide__stage {
+  container: stage / size;
+  aspect-ratio: 16 / 9;
+  background: var(--color-paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* Scopé à .slide > .slide__stage (pas .slide__stage seul) : les
+   panneaux d'aperçu du présentateur (.presenter-preview, voir
+   presenter.css) et les miniatures (.stage-preview) rendent aussi un
+   .slide__stage mais ne sont pas des .slide — --mobile-gutter n'y est
+   pas défini, et leur propre verrou (basé sur leur container, pas le
+   viewport) s'applique déjà, voir .presenter-preview .slide__stage et
+   .stage-preview .slide__stage. */
+.slide > .slide__stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1280px;
+  max-width: none;
+  max-height: none;
+  transform-origin: center center;
+  transform: translate(-50%, -50%) scale(min(
+    calc((100dvw - 2 * var(--mobile-gutter)) / 1280px),
+    calc((100dvh - 2 * var(--mobile-gutter)) / 720px)
+  ));
+}
+
+.slide__content {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.slide--cover .slide__content {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ---------- Nav dots ---------- */
+
+.nav-dots {
+  position: fixed;
+  top: 50%;
+  right: clamp(0.75rem, 2vw, 1.75rem);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  z-index: 10;
+}
+
+.nav-dots a {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-line);
+  border: 1px solid transparent;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.nav-dots a.is-active {
+  background: var(--color-gold);
+  transform: scale(1.3);
+}
+
+@media (max-width: 640px) {
+  .nav-dots { display: none; }
+}
+
+/* ---------- Cover slide ---------- */
+
+/* Même fond clair que les slides de chapitre "Recommandations" (--papier,
+   voir chapitre.css) — pas le --color-paper par défaut de .slide__stage
+   (palette pré-charte, legèrement différente : #fdfaf5 vs #f2eee6). La
+   typographie de cette slide garde ses propres tokens historiques
+   (--color-ink, --font-display...) le temps d'une décision explicite sur
+   leur avenir (voir CLAUDE.md, Historique) ; seul le fond est aligné ici. */
+.slide__stage.slide--cover {
+  background: var(--papier);
+}
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 40rem;
+}
+
+.cover__logo {
+  width: clamp(90px, 12cqw, 140px);
+  margin-bottom: var(--space-2);
+}
+
+.cover__kicker {
+  /* Pas de majuscules systématiques (charte CLAUDE.md) ; distinction par
+     la taille, l'espacement et le poids plutôt que la casse. L'or reste
+     réservé aux totaux/chiffres clés, pas à un simple repère textuel. */
+  font-size: clamp(0.8rem, 0.4cqw + 0.7rem, 0.95rem);
+  letter-spacing: 0.03em;
+  color: var(--color-ink-soft);
+  font-weight: 600;
+}
+
+.cover__title {
+  /* Texte de narration fixe (copie du système, pas de donnée client) :
+     nowrap + repli borné plutôt que le wrap normalement utilisé pour les
+     titres pouvant contenir du texte client (voir CLAUDE.md, Mise en
+     page) — rétrécit jusqu'au plancher plutôt que de passer à la ligne.
+     Police alignée sur .chap-title (--font-serif-chapitre) pour que ce
+     titre s'écrive comme "Assurance vie" (section-title) — seule la
+     typo est reprise ici, le reste de la slide garde ses tokens
+     historiques (voir CLAUDE.md, Historique). */
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  font-size: clamp(2rem, 3cqw + 1.2rem, 3.4rem);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.cover__meta {
+  color: var(--color-ink-soft);
+  font-size: clamp(0.9rem, 0.4cqw + 0.8rem, 1.05rem);
+}
+
+/* ---------- Shared slide header ---------- */
+
+.slide__header {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.reset-btn {
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  color: var(--color-ink-soft);
+  font-size: 0.8rem;
+  padding: var(--space-0) var(--space-2);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.slide__eyebrow {
+  display: block;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-soft);
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.slide__header h2 {
+  font-size: clamp(1.6rem, 1.6cqw + 1.1rem, 2.4rem);
+}
+
+/* ---------- KPI row ----------
+   Toujours 3 colonnes égales : la scène garde une forme 16:9 fixe, donc
+   pas d'empilement mobile — le contenu se met à l'échelle, il ne
+   réorganise pas la grille. */
+
+.kpi-row {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.kpi-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-2);
+}
+
+.kpi-card__label {
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+  margin-bottom: var(--space-0);
+}
+
+.kpi-card__value {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.4cqw + 1rem, 2.1rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.kpi-card__value-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-0);
+}
+
+.kpi-card__unit {
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+}
+
+.kpi-card__caption {
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  margin-top: var(--space-0);
+}
+
+.kpi-card__input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  border-bottom: 1px dashed var(--color-line);
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.4cqw + 1rem, 2.1rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-ink);
+  padding: 0.1rem 0;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.kpi-card__input::-webkit-outer-spin-button,
+.kpi-card__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.kpi-card__input:hover {
+  border-bottom-color: var(--color-gold-soft);
+}
+
+.kpi-card__input:focus {
+  outline: none;
+  border-bottom-color: var(--color-gold);
+  background: var(--color-paper-alt);
+}
+
+/* Couleurs de marque uniquement (charte CLAUDE.md) : pas de vert/rouge
+   sémantique. "Bonne nouvelle" s'exprime en or (comme un chiffre clé),
+   l'écart à combler reste neutre en encre — le texte porte le sens, la
+   couleur ne fait que le renforcer légèrement. */
+.kpi-card__badge {
+  display: inline-block;
+  margin-top: var(--space-1);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-gold);
+  background: color-mix(in srgb, var(--color-gold) 14%, transparent);
+  padding: var(--space-0) var(--space-1);
+  border-radius: 999px;
+}
+
+.kpi-card__badge--warn {
+  color: var(--color-ink-soft);
+  background: color-mix(in srgb, var(--color-ink) 8%, transparent);
+}
+
+/* ---------- Intro grid (3 panels) ----------
+   Occupe toute la hauteur restante de la scène (flex: 1, min-height: 0)
+   ; les 3 panneaux s'étirent à la même hauteur (stretch, par défaut en
+   grid). Chaque panneau est lui-même une colonne flex dont seule la
+   zone de contenu variable (liste/tableau) défile — voir .scroll-fade. */
+
+.intro-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-2);
+  overflow: hidden;
+}
+
+.panel h3 {
+  flex: none;
+  font-size: 1rem;
+  line-height: 1.2;
+  font-family: var(--font-body);
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.panel__total {
+  /* La hiérarchie vient d'abord de la taille/du poids (plus grand, plus
+     gras que le label "Actifs" qui le précède) ; l'or ne fait que
+     renforcer un chiffre qui se distinguerait déjà sans lui
+     (charte CLAUDE.md : hiérarchie par le poids/la taille, pas la
+     couleur — l'or reste réservé aux totaux). */
+  font-family: var(--font-display);
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--color-gold);
+}
+
+/* ---------- Contenu de longueur variable (scroll interne) ----------
+   À appliquer par défaut à toute liste/tableau dont le nombre de lignes
+   dépend du client (actifs, contrats, comparatifs...) à l'intérieur
+   d'un panneau flex-colonne : la zone remplit l'espace restant du
+   panneau et défile en interne au lieu d'agrandir la slide. Le
+   dégradé en bas n'apparaît que s'il reste du contenu caché à faire
+   défiler (technique CSS pure : le calque local masque l'indice une
+   fois arrivé en bas, pas besoin de JS pour le détecter). */
+
+.scroll-fade {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  background-image:
+    linear-gradient(var(--color-paper), var(--color-paper)),
+    linear-gradient(to top, color-mix(in srgb, var(--color-ink) 16%, transparent), transparent);
+  background-repeat: no-repeat;
+  background-position: bottom, bottom;
+  background-size: 100% 1.75rem, 100% 1.75rem;
+  background-attachment: local, scroll;
+}
+
+/* Actifs list */
+
+.actifs-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.actifs-list li:last-child { border-bottom: none; }
+
+.actifs-list__text { min-width: 0; }
+
+.actifs-list__name {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.actifs-list__detail {
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  overflow-wrap: break-word;
+}
+
+.actifs-list__amount {
+  flex: none;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
+}
+
+.actifs-list__amount-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-0);
+  flex: none;
+}
+
+.actifs-list__amount-input {
+  width: 5.5rem;
+  border: none;
+  border-bottom: 1px dashed transparent;
+  background: transparent;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
+  color: var(--color-ink);
+  padding: 0.1rem 0;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.actifs-list__amount-input::-webkit-outer-spin-button,
+.actifs-list__amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.actifs-list__amount-input:hover {
+  border-bottom-color: var(--color-line);
+}
+
+.actifs-list__amount-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-gold);
+  background: var(--color-paper-alt);
+}
+
+/* Répartition (donut) */
+
+.panel--repartition {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.donut {
+  flex: none;
+  width: clamp(120px, 14cqw, 170px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--color-gold) 0 calc(var(--pct-financiere) * 1%),
+    var(--color-ink) calc(var(--pct-financiere) * 1%) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-1) 0 var(--space-2);
+}
+
+.donut__hole {
+  width: 58%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-paper);
+}
+
+.legend {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.88rem;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.legend strong {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.dot--financiere { background: var(--color-gold); }
+.dot--bancaire { background: var(--color-ink); }
+
+/* Objectifs */
+
+.objectifs-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 0.95rem;
+}
+
+.objectifs-list li:last-child { border-bottom: none; }
+
+.objectifs-list__num {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.objectifs-list__text {
+  flex: 1;
+  min-width: 0;
+  border-bottom: 1px dashed transparent;
+}
+
+.objectifs-list__text:hover {
+  border-bottom-color: var(--color-line);
+}
+
+.objectifs-list__text:focus {
+  outline: none;
+  border-bottom-color: var(--color-gold);
+  background: var(--color-paper-alt);
+}
+
+.objectifs-list__delete {
+  flex: none;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: var(--space-0);
+  border-radius: 999px; /* même pilule que les autres boutons — un seul rayon hors-carte */
+}
+
+.objectifs-list__delete:hover {
+  color: var(--color-ink);
+  background: var(--color-paper-alt);
+}
+
+.add-btn {
+  flex: none;
+  display: block;
+  width: 100%;
+  margin-top: var(--space-2);
+  border: 1px dashed var(--color-line);
+  background: transparent;
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+  padding: var(--space-1);
+  border-radius: 999px; /* même pilule que les autres boutons — un seul rayon hors-carte */
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}

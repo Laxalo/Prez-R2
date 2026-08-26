@@ -1,0 +1,3239 @@
+/* Système "chapitrage" — handoff design_handoff_slide_patrimoine +
+   slides assurance vie. Partagé par tous les gabarits à chapitres
+   numérotés (01 Constat, 02 Recommandations, 03 Mise en œuvre).
+
+   Toutes les valeurs de référence (px, à 1280 de large) sont converties
+   en cqw sur la base 1cqw = 12.8px à 1280px (100cqw = 1280px) : à la
+   largeur de référence, chaque valeur est donc pixel-exacte au handoff ;
+   en dessous ou au-dessus, tout se met à l'échelle proportionnellement
+   ensemble (texte compris), sans recalcul de mise en page — l'équivalent
+   du transform:scale() recommandé par les handoffs, obtenu ici par
+   container query CSS (voir .slide__stage dans slides.css) plutôt que
+   par un scale du DOM, pour un rendu de texte net à toute taille.
+   Un palier de secours (max(floor, Ncqw)) est ajouté aux grandes valeurs
+   d'affichage pour rester lisible sur une scène très réduite.
+
+   --chap-ink-rgb porte la couleur de texte/trait de chaque slide (encre
+   sur fond papier, papier sur fond encre), posée une fois sur
+   .slide__stage.slide--<type> ci-dessous ; tout le reste (rail, rail
+   d'étapes, contenu) l'hérite plutôt que de choisir sa propre couleur —
+   un futur gabarit sur fond encre n'a qu'à changer cette seule valeur. */
+
+/* ---------- Fond par gabarit ---------- */
+
+/* Sélecteur composé (pas de descendance) : .slide__stage et
+   .slide--<type> sont posées sur le même élément par
+   deck.js:renderStageHtml ("slide__stage slide--<type>"), pas sur deux
+   nœuds parent/enfant — un sélecteur avec espace ne matcherait rien. */
+.slide__stage.slide--constat,
+.slide__stage.slide--cloture-reflexion,
+.slide__stage.slide--cloture-detail {
+  background: var(--encre);
+  --chap-ink-rgb: var(--papier-rgb);
+}
+
+.slide__stage.slide--section-title,
+.slide__stage.slide--chap-regles,
+.slide__stage.slide--epargne-dormante,
+.slide__stage.slide--deux-poches,
+.slide__stage.slide--impact-fiscal,
+.slide__stage.slide--fiscalite-rachats,
+.slide__stage.slide--transmission,
+.slide__stage.slide--scpi-mecanisme,
+.slide__stage.slide--scpi-cadence,
+.slide__stage.slide--atouts,
+.slide__stage.slide--scpi-financement {
+  background: var(--papier);
+  --chap-ink-rgb: var(--encre-rgb);
+}
+
+.slide--constat .slide__content,
+.slide--cloture-reflexion .slide__content,
+.slide--cloture-detail .slide__content,
+.slide--section-title .slide__content,
+.slide--chap-regles .slide__content,
+.slide--epargne-dormante .slide__content,
+.slide--deux-poches .slide__content,
+.slide--impact-fiscal .slide__content,
+.slide--fiscalite-rachats .slide__content,
+.slide--transmission .slide__content,
+.slide--scpi-mecanisme .slide__content,
+.slide--scpi-cadence .slide__content,
+.slide--atouts .slide__content,
+.slide--scpi-financement .slide__content {
+  padding: 0;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+/* ---------- Rail d'en-tête (partagé) ---------- */
+
+.chap-rail {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.34375cqw;
+  padding-bottom: 1.09375cqw;
+  border-bottom: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+}
+
+.chap-rail__left {
+  display: flex;
+  align-items: center;
+  gap: 1.71875cqw;
+}
+
+.chap-logo {
+  height: 3.28125cqw;
+  width: auto;
+  display: block;
+  flex: none;
+}
+
+.chap-logo-sep {
+  flex: none;
+  width: 0.078125cqw;
+  height: 2.03125cqw;
+  background: rgba(199, 174, 137, 0.5);
+}
+
+.chap-nav {
+  display: flex;
+  align-items: baseline;
+  gap: 2.03125cqw;
+}
+
+.chap-nav__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.78125cqw;
+  opacity: 0.34;
+}
+
+.chap-nav__item--active {
+  opacity: 1;
+}
+
+.chap-nav__num {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.171875cqw;
+  line-height: 1;
+}
+
+.chap-nav__item--active .chap-nav__num {
+  color: var(--or);
+}
+
+.chap-nav__label {
+  font-weight: 700;
+  font-size: 0.8203125cqw;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.chap-nav__item--active .chap-nav__label {
+  color: rgba(var(--chap-ink-rgb), 0.78);
+}
+
+.chap-meta {
+  flex: none;
+  font-weight: 450;
+  font-size: 0.9765625cqw;
+  line-height: 1;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.45);
+}
+
+/* ---------- Rail d'étapes imbriqué (RailEtapes.dc.html) ----------
+   Paramétrique : nombre d'étapes et libellés variables (voir
+   js/slides/_chapitre.js renderRailEtapes). Réutilisable tel quel pour
+   PER, SCPI — rien de spécifique à l'assurance vie ici. */
+
+.rail-etapes {
+  flex: none;
+  margin-top: 1.09375cqw;
+  display: grid;
+  column-gap: 0.9375cqw;
+  width: 100%;
+}
+
+.rail-step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.703125cqw;
+}
+
+.rail-step__track {
+  height: 0.15625cqw;
+  transition: background var(--chap-duration-fade) linear;
+}
+
+.rail-step__row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625cqw;
+}
+
+.rail-step__num {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.171875cqw;
+  line-height: 1;
+  transition: color var(--chap-duration-fade) linear;
+}
+
+.rail-step__label {
+  font-weight: 700;
+  font-size: 0.7421875cqw;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color var(--chap-duration-fade) linear;
+}
+
+.rail-step--now .rail-step__track { background: var(--or); }
+.rail-step--past .rail-step__track { background: rgba(var(--chap-ink-rgb), 0.42); }
+.rail-step--next .rail-step__track { background: rgba(var(--chap-ink-rgb), 0.13); }
+
+.rail-step--now .rail-step__num { color: var(--or); }
+.rail-step--past .rail-step__num { color: rgba(var(--chap-ink-rgb), 0.5); }
+.rail-step--next .rail-step__num { color: rgba(var(--chap-ink-rgb), 0.3); }
+
+.rail-step--now .rail-step__label { color: rgba(var(--chap-ink-rgb), 0.85); }
+.rail-step--past .rail-step__label { color: rgba(var(--chap-ink-rgb), 0.5); }
+.rail-step--next .rail-step__label { color: rgba(var(--chap-ink-rgb), 0.3); }
+
+/* ---------- Titres de narration fixe (nowrap + repli borné) ----------
+   Texte écrit par nous, identique pour tout client (charte CLAUDE.md) :
+   jamais de wrap, un plancher de taille absorbe les titres inhabituels.
+   Réutilisé par tous les gabarits de contenu de ce chapitre. */
+
+.chap-title {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ---------- Révélation animée (voir js/reveal.js) ----------
+   Un élément neuf dans un état de révélation progressive porte
+   data-reveal + la classe .is-entering dans le HTML lui-même (posé par
+   le renderer, à l'état "de départ") ; playReveal() retire la classe une
+   fois l'élément dans le DOM, ce qui déclenche la transition vers l'état
+   normal — seul moyen de "transitionner" ici puisque chaque changement
+   d'état remplace tout le HTML de la slide (pas de patch DOM ciblé, donc
+   pas de transition CSS spontanée). Un seul vocabulaire visuel partout
+   (fondu + léger zoom), pas une variante par slide. */
+
+[data-reveal] {
+  transition: opacity var(--chap-duration-move) var(--chap-ease-move),
+    transform var(--chap-duration-move) var(--chap-ease-move),
+    height var(--chap-duration-move) var(--chap-ease-move),
+    width var(--chap-duration-move) var(--chap-ease-move),
+    left var(--chap-duration-move) var(--chap-ease-move);
+}
+
+/* scale(0.985), pas plus marqué : au-delà (0.94 à l'origine), le texte
+   qui grossit pendant la transition perd son antialiasing sur Chrome
+   (rendu flou le temps du fondu, surtout visible sur du texte en gras/
+   grande taille — repéré sur le panneau de "Les atouts") — un zoom aussi
+   discret reste perceptible sans ce défaut. */
+[data-reveal].is-entering {
+  opacity: 0;
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    transition: none;
+  }
+}
+
+/* ---------- Gabarit "Constat" ---------- */
+
+.constat {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.constat__title-block {
+  flex: none;
+  padding-top: 2.03125cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.constat__rule {
+  margin-top: 1.5625cqw;
+  width: 5.46875cqw;
+  height: 0.15625cqw;
+  background: var(--or);
+  display: block;
+}
+
+.constat__title {
+  margin: 0;
+  max-width: 85%;
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: max(1.9rem, 4.0625cqw);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: rgb(var(--chap-ink-rgb));
+  /* Le titre Constat peut contenir un nom/texte client non maîtrisé :
+     pas de nowrap, il passe à la ligne plutôt que de déborder (charte
+     CLAUDE.md, catégorie "texte pouvant contenir des données client"). */
+}
+
+.constat__kpis {
+  /* Rapprochés du titre (marge fixe, pas margin-top:auto) : c'est
+     désormais .constat__objectifs qui absorbe l'espace disponible en bas
+     de la scène, pas un vide au milieu entre le titre et les KPI. */
+  margin-top: 3.125cqw;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr 1px 1fr;
+  column-gap: 3.4375cqw;
+  align-items: end;
+}
+
+.constat__kpi-rule {
+  background: rgba(var(--chap-ink-rgb), 0.18);
+  height: 9.21875cqw;
+}
+
+/* Hauteur toujours réservée (voir constat__kpi-rule, seul élément fixe
+   de la rangée) : ni le repère ni le KPI--empty ne changent la hauteur
+   de la grille selon l'état de révélation. */
+.constat__kpi-rule--hidden {
+  background: transparent;
+}
+
+.constat__kpi--empty {
+  height: 9.21875cqw;
+}
+
+.constat__kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.703125cqw;
+  text-align: center;
+}
+
+.constat__kpi-label {
+  font-weight: 700;
+  font-size: 0.8203125cqw;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.constat__kpi-value {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: max(2.2rem, 5.15625cqw);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.constat__kpi-note {
+  font-weight: 450;
+  font-size: 1.0546875cqw;
+  line-height: 1.4;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+/* Enveloppes (barre + registre), révélées ensemble à l'état 2 — voir
+   constat.js. margin-top:auto (comme .constat__objectifs plus bas) :
+   flexbox répartit l'espace disponible à parts égales entre les deux
+   marges auto de ce conteneur, le bloc se retrouve centré, à égale
+   distance des KPI au-dessus et des objectifs en dessous. Toujours
+   rendu (même à l'état 1) pour que cette distance ne bouge pas quand le
+   bloc apparaît — seule son opacité change, pas sa présence dans le
+   flux (même logique que .deux-poches__practice--invisible). */
+.constat__enveloppes {
+  flex: none;
+  margin-top: auto;
+  width: 100%;
+}
+
+.constat__enveloppes--invisible {
+  opacity: 0;
+}
+
+.constat__bar {
+  flex: none;
+  width: 100%;
+  display: flex;
+  height: 0.9375cqw;
+}
+
+.constat__registre {
+  flex: none;
+  margin-top: 1.09375cqw;
+  width: 100%;
+  display: grid;
+  /* grid-template-columns fixé en style inline (nombre de supports variable,
+     3 à 6) — repeat(var(...)) n'est pas fiable dans tous les moteurs CSS. */
+  column-gap: var(--registre-gap, 2.03125cqw);
+}
+
+.constat__support {
+  display: flex;
+  flex-direction: column;
+  gap: 0.46875cqw;
+  padding-top: 1.09375cqw;
+  border-top: 0.15625cqw solid transparent;
+}
+
+.constat__support--empty {
+  height: 0;
+}
+
+.constat__support-nom {
+  font-weight: 450;
+  font-size: 1.328125cqw;
+  line-height: 1.1;
+}
+
+.constat__support-montant {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: max(1.1rem, 2.03125cqw);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.constat__support-meta {
+  font-weight: 700;
+  font-size: 0.78125cqw;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+/* Encart objectifs client, sous le registre de supports — c'est ce bloc
+   qui absorbe l'espace restant en bas de la scène (margin-top:auto),
+   plutôt que .constat__kpis (voir plus haut) : évite un vide au milieu
+   de la slide et donne aux objectifs une vraie présence, pas une note de
+   bas de page. Liste en grille 2 colonnes plutôt qu'une ligne fondue
+   avec des "·" — plus grand, plus lisible. */
+.constat__objectifs {
+  flex: none;
+  margin-top: auto;
+  padding-top: 1.5625cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9375cqw;
+}
+
+/* Toujours dans le flux dès l'état 1 (même logique que
+   .constat__enveloppes--invisible) : sa présence pilote
+   margin-top:auto, la faire disparaître du DOM décentrerait le bloc
+   enveloppes tant qu'elle n'est pas révélée. */
+.constat__objectifs--invisible {
+  opacity: 0;
+}
+
+.constat__objectifs-label {
+  font-weight: 700;
+  font-size: 0.859375cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+.constat__objectifs-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2.34375cqw;
+  row-gap: 0.78125cqw;
+}
+
+/* Petite puce pleine plutôt que le disque natif des <li> (taille/couleur
+   non maîtrisables de la même façon) : un point, pas une décoration,
+   coloré comme le texte qu'il introduit. */
+.constat__objectif {
+  margin: 0;
+  padding-left: 1.09375cqw;
+  position: relative;
+  font-weight: 450;
+  font-size: 1.25cqw;
+  line-height: 1.4;
+  color: rgba(var(--chap-ink-rgb), 0.8);
+}
+
+.constat__objectif::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 0.3125cqw;
+  height: 0.3125cqw;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* ---------- Gabarit générique "Titre de section" ----------
+   Réutilisable pour PER, SCPI, immobilier : seuls le nom du chapitre et
+   la ligne "Recommandation N sur 3" changent. Pas de rail d'étapes (la
+   séquence n'est pas encore annoncée). */
+
+.section-title {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.section-title__body {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-title__rule {
+  width: 5.46875cqw;
+  height: 0.15625cqw;
+  background: var(--or);
+  display: block;
+}
+
+.section-title__title {
+  margin-top: 2.03125cqw;
+  font-size: max(2.6rem, 7.1875cqw);
+  letter-spacing: -0.035em;
+}
+
+.section-title__sub {
+  margin-top: 1.71875cqw;
+  font-weight: 700;
+  font-size: 1.23046875cqw;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.45);
+}
+
+/* ---------- Gabarit "Annonce à règles" (slide 2) ----------
+   Fixe pour tout chapitre à règles (rendement/fiscalité/transmission,
+   etc.) : seuls les libellés et phrases teaser changent. Nombre de
+   règles variable via la grille (repeat(n,1fr), comme le rail d'étapes). */
+
+.chap-regles {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.chap-regles__intro {
+  padding-top: 2.65625cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chap-regles__kicker {
+  font-weight: 700;
+  font-size: 1.23046875cqw;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+.chap-regles__rule {
+  margin-top: 1.5625cqw;
+  width: 5.46875cqw;
+  height: 0.15625cqw;
+  background: var(--or);
+  display: block;
+}
+
+.chap-regles__title {
+  margin-top: 1.71875cqw;
+  font-size: max(2.4rem, 4.84375cqw);
+}
+
+.chap-regles__lead {
+  margin: 1.40625cqw 0 0;
+  font-weight: 450;
+  font-size: 1.875cqw;
+  line-height: 1.55;
+  text-align: center;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.72);
+}
+
+.chap-regles__lead--invisible {
+  opacity: 0;
+}
+
+/* Le sous-titre attend que le cadenas ait fini son animation d'ouverture
+   avant de commencer à apparaître (voir chapitre-regles.js) : même délai
+   + durée totale que .chap-regles__picto--unlocking .chap-icon__shackle
+   (x1 avant l'ouverture + x3 pour l'ouverture elle-même), posée en délai
+   plutôt qu'en état supplémentaire. */
+.chap-regles__lead[data-reveal] {
+  transition-delay: calc(var(--chap-duration-move) * 4);
+}
+
+/* Halo temporaire sur le mot-clé du titre (état 2, en même temps que le
+   pictogramme) : un pulse, pas un accent permanent — teinte neutre
+   proche de l'encre, pas l'accent or, pour ne pas entrer en conflit avec
+   la règle "un seul accent or par slide". Durée dérivée de
+   --chap-duration-move (x3) plutôt qu'une valeur inventée pour ce seul
+   cas (charte CLAUDE.md : une seule source de vérité pour les durées). */
+.chap-regles__halo--pulse {
+  animation: chap-halo-pulse calc(var(--chap-duration-move) * 3) var(--chap-ease-move);
+}
+
+@keyframes chap-halo-pulse {
+  0%,
+  100% {
+    text-shadow: 0 0 0 rgba(var(--chap-ink-rgb), 0);
+  }
+  40% {
+    text-shadow: 0 0 0.78125cqw rgba(var(--chap-ink-rgb), 0.32);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chap-regles__halo--pulse {
+    animation: none;
+  }
+}
+
+/* Occupe l'espace entre l'intro et la grille de règles (flex:1 —
+   remplace l'ancien margin-top:auto de la grille, qui poussait celle-ci
+   en bas sans rien centrer dans l'espace libéré). Révélé à l'état 2 :
+   toujours dans le flux dès l'état 1 (juste invisible), pour que sa
+   position ne bouge pas à l'apparition (même logique que
+   .constat__enveloppes--invisible). */
+.chap-regles__picto {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* x1,5 par rapport au reste des pictogrammes du système (5cqw) — celui-ci
+   porte seul toute une slide d'arrivée, il a le droit d'être plus
+   présent. En cqw (pas un px fixe sur le <svg>, voir chapitre-regles.js)
+   pour rester à l'échelle du reste de la scène. */
+.chap-regles__picto .chap-icon {
+  width: 7.5cqw;
+  height: 7.5cqw;
+}
+
+.chap-regles__picto--invisible {
+  opacity: 0;
+}
+
+/* Le cadenas s'ouvre visuellement à l'apparition (pas juste dessiné déjà
+   ouvert) : l'anse pivote depuis une position fermée (approximativement
+   symétrique, extrémité libre proche du corps) jusqu'à sa position
+   dessinée (ouverte, extrémité détachée) — pivot sur le point où l'anse
+   rejoint le corps. Délai d'un cran (x1) avant de démarrer : laisse le
+   temps de voir le cadenas fermé une fois le fondu d'apparition terminé,
+   plutôt qu'il ne commence à s'ouvrir pendant qu'il apparaît encore.
+   Ouverture elle-même ralentie (x3, pas x2) — un geste qu'on doit avoir
+   le temps de lire, pas un sursaut. Durées dérivées de
+   --chap-duration-move, comme le pulse du halo : une seule source de
+   vérité (voir aussi .chap-regles__lead[data-reveal] plus haut, qui
+   attend la fin de cette même animation avant d'apparaître). */
+.chap-regles__picto--unlocking .chap-icon__shackle {
+  transform-box: view-box;
+  transform-origin: 7px 11px;
+  animation: chap-lock-open calc(var(--chap-duration-move) * 3) var(--chap-ease-move) calc(var(--chap-duration-move) * 1) both;
+}
+
+@keyframes chap-lock-open {
+  from {
+    transform: rotate(27deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chap-regles__picto--unlocking .chap-icon__shackle {
+    animation: none;
+  }
+}
+
+/* Hauteur toujours réservée, que les règles soient déjà révélées ou non
+   (min-height calé sur une colonne pleine, voir .chap-regle) : sinon le
+   pictogramme au-dessus — centré dans l'espace restant (flex:1) —
+   change de hauteur/position entre les états où la grille est vide et
+   ceux où elle est pleine. */
+.chap-regles__grid {
+  flex: none;
+  width: 100%;
+  min-height: 5.390625cqw;
+  display: grid;
+  column-gap: 3.4375cqw;
+}
+
+.chap-regle {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Barre qui se remplit de gauche à droite à l'apparition d'une règle
+   (voir chapitre-regles.js regleHtml) — remplace l'ancien border-top
+   statique : au repos (règle déjà révélée, ou état atteint sans
+   animation), scaleX(1) = même rendu visuel qu'un simple filet plein. */
+.chap-regle__fill {
+  display: block;
+  width: 100%;
+  height: 0.15625cqw;
+  margin-bottom: 1.09375cqw;
+  background: var(--or);
+  transform-origin: left;
+  transform: scaleX(1);
+}
+
+.chap-regle__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.703125cqw;
+  margin-top: -0.3125cqw; /* remonte légèrement le numéro/libellé */
+  margin-bottom: 0.9375cqw;
+}
+
+.chap-regle__num {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 2.34375cqw;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}
+
+.chap-regle__label {
+  font-weight: 700;
+  font-size: 1.25cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ---------- Gabarit "Épargne dormante" (slide 3, optionnelle) ----------
+   Chronologie à n colonnes, barre proportionnelle en encre dégressive —
+   voir js/slides/epargne-dormante.js pour le calcul des hauteurs et de
+   l'opacité depuis les montants. */
+
+.epargne-dormante {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.epargne-dormante__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.epargne-dormante__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+/* Titre court introduisant le diagramme : sans-serif, poids marqué mais
+   plus petit que .epargne-dormante__title — juste assez de présence pour
+   annoncer la chronologie sans concurrencer le titre principal.
+   margin-top:auto ET .epargne-dormante__grid margin-top:auto (voir plus
+   bas) : dans un conteneur flex en colonne, deux marges auto sur le même
+   axe se partagent l'espace disponible À ÉGALITÉ (comportement standard
+   flexbox) — l'écart titre→sous-titre et l'écart sous-titre→premier
+   montant restent donc identiques quelle que soit la hauteur de la
+   scène, sans valeur recopiée à la main des deux côtés. */
+.epargne-dormante__diagram-intro {
+  margin: auto auto 0;
+  max-width: 50cqw;
+  font-weight: 600;
+  font-size: 1.40625cqw;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(var(--chap-ink-rgb), 0.85);
+}
+
+.epargne-dormante__grid {
+  margin-top: auto;
+  width: 100%;
+  display: grid;
+  column-gap: 2.65625cqw;
+  align-items: end;
+}
+
+.epargne-dormante__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.epargne-dormante__value {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: max(1.4rem, 2.65625cqw);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.epargne-dormante__bar {
+  margin-top: 1.09375cqw;
+  width: 100%;
+  display: block;
+  background: rgb(var(--chap-ink-rgb));
+}
+
+.epargne-dormante__label {
+  width: 100%;
+  padding-top: 0.9375cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.3);
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+/* Note de bas de slide sur l'hypothèse d'inflation — discrète (pas un
+   élément de contenu principal) mais assez grande pour rester lisible
+   sans effort, désormais deux phrases. */
+.epargne-dormante__note {
+  margin: 1.40625cqw 0 0;
+  max-width: 65cqw;
+  font-size: 0.9375cqw;
+  line-height: 1.5;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}
+
+/* ---------- Gabarit "Deux poches" (slide 4, composition du contrat) ---------- */
+
+.deux-poches {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.deux-poches__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deux-poches__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+.deux-poches__grid {
+  margin: auto 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  column-gap: 4.375cqw;
+  align-items: start;
+}
+
+.deux-poches__divider {
+  background: rgba(var(--chap-ink-rgb), 0.16);
+  align-self: stretch;
+}
+
+.deux-poches__divider--hidden {
+  background: transparent;
+}
+
+.deux-poches__col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5625cqw;
+}
+
+.deux-poches__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.25cqw;
+  padding-bottom: 1.09375cqw;
+  border-bottom: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.2);
+}
+
+.deux-poches__name {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 2.34375cqw;
+  white-space: nowrap;
+}
+
+.deux-poches__tag {
+  font-weight: 700;
+  font-size: 0.9375cqw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.deux-poches__item {
+  display: flex;
+  align-items: center;
+  gap: 1.40625cqw;
+}
+
+.chap-icon {
+  flex: none;
+  display: block;
+}
+
+.deux-poches__item-text {
+  font-weight: 450;
+  font-size: 1.171875cqw;
+  line-height: 1.4;
+}
+
+.deux-poches__practice {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 1.5625cqw;
+}
+
+/* Toujours rendue (état 1 comme état 2) pour réserver sa hauteur : sinon
+   sa disparition/apparition déplace verticalement la grille au-dessus,
+   centrée par margin:auto (même défaut que sur "Fiscalité des rachats",
+   voir .fiscalite-rachats__rules). La phrase n'a de sens qu'une fois les
+   deux poches visibles, donc masquée (pas supprimée) à l'état 1. */
+.deux-poches__practice--invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.deux-poches__col--invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.deux-poches__practice-label {
+  flex: none;
+  font-weight: 700;
+  font-size: 0.9375cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+.deux-poches__practice-sep {
+  flex: none;
+  width: 0.078125cqw;
+  height: 1.5625cqw;
+  background: rgba(var(--chap-ink-rgb), 0.2);
+}
+
+.deux-poches__practice-text {
+  margin: 0;
+  font-weight: 450;
+  font-size: 1.40625cqw;
+  line-height: 1.5;
+  color: rgba(var(--chap-ink-rgb), 0.72);
+}
+
+/* ---------- Gabarit "Impact fiscal" (slide 5, cuves à 2 états) ---------- */
+
+.impact-fiscal {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.impact-fiscal__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.impact-fiscal__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+/* Même traitement que .epargne-dormante__diagram-intro (slide "Ne pas
+   investir, c'est perdre à coup sûr") — un seul style de phrase
+   d'hypothèse dans le deck, pas une variante par gabarit. Caché jusqu'à
+   l'état 7 (voir showHyp en JS), qui ne fait apparaître qu'elle. */
+.impact-fiscal__lead {
+  margin-top: 1.71875cqw;
+  font-weight: 600;
+  font-size: 1.5625cqw;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.85);
+}
+
+.impact-fiscal__lead--invisible {
+  opacity: 0;
+}
+
+/* Deux cuves seulement (le panneau d'écart, état 11, n'est plus une 3e
+   colonne — voir .impact-fiscal__ecart plus bas : un overlay positionné
+   à gauche de la cuve bancaire, hors du flux de cette grille) — pour
+   que les deux cuves restent centrées sur la slide, qu'il soit affiché
+   ou non (remonté : elles se décalaient à gauche pour lui faire de la
+   place). */
+.impact-fiscal__grid {
+  margin: 1.5625cqw 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 3.28125cqw;
+}
+
+/* Entrée du graphique chiffré (état 7, voir gridEntering en JS) : plus
+   lente que le fondu générique (x1.5) pour que le passage schéma ->
+   chiffres se lise comme une transition, pas un saut. */
+.impact-fiscal__grid[data-reveal] {
+  transition-duration: calc(var(--chap-duration-move) * 1.5);
+}
+
+/* Mécanisme illustratif (états 1-4, voir introRender en JS) : deux
+   cuves seulement, aucune 3e colonne réservée pour l'écart — centrées
+   sur la slide, pas décalées à gauche comme .impact-fiscal__grid (qui,
+   lui, réserve toujours la place du panneau d'écart, même vide). */
+.impact-fiscal__intro-grid {
+  margin: auto 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 3.28125cqw;
+}
+
+.cuve-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625cqw;
+}
+
+.cuve-col__value {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: max(1.4rem, 2.65625cqw);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Total (au-dessus) et repère "Versé" (états 9-10, voir cuveHtml en JS)
+   : chacun n'apparaît qu'une fois SON remplissage terminé — délai calé
+   sur la durée de ce remplissage (.cuve__fill--grow[data-reveal]
+   ci-dessous, x2), pas en même temps que lui. */
+.cuve-col__value--delayed[data-reveal],
+.cuve__verse--delayed[data-reveal] {
+  transition-delay: calc(var(--chap-duration-move) * 2);
+}
+
+/* Réserve sa place dès le stage 0 (état 9, voir valueShown en JS) :
+   seule l'opacité change à l'apparition, jamais la présence dans le
+   flux — sinon le pied de colonne se déplace quand le total apparaît. */
+.cuve-col__value--invisible {
+  opacity: 0;
+}
+
+.cuve {
+  position: relative;
+  width: 15.625cqw;
+  height: 21.09375cqw;
+  border: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.3);
+  box-sizing: border-box;
+}
+
+/* Mécanisme illustratif (états 1-4, voir introCuveHtml) : pas de
+   contour de cuve — juste les rectangles colorés (capital, intérêts),
+   du vide au-dessus. Le graphique chiffré (états 5-6, cuveHtml), lui,
+   garde le contour plein (.cuve sans ce modificateur). */
+.cuve--no-border {
+  border: none;
+}
+
+.cuve__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Remplissage (état 7, voir growFromZero en JS) : plus lent que le
+   mouvement standard (x2) pour qu'on ait le temps de voir monter le
+   niveau, pas un simple sursaut — seulement ce cas précis (pas la
+   redescente de la cuve bancaire à l'état 8, qui garde sa propre
+   vitesse déjà réglée). */
+.cuve__fill--grow[data-reveal] {
+  transition-duration: calc(var(--chap-duration-move) * 2);
+}
+
+.cuve__released {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: rgba(var(--bleu-rgb), 0.13);
+  border-top: 0.078125cqw dashed rgba(var(--chap-ink-rgb), 0.4);
+}
+
+.cuve__verse-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 0.078125cqw dashed rgba(var(--papier-rgb), 0.55);
+}
+
+/* Centré sur la cuve (left:0/right:0/text-align:center), et sur son
+   propre point médian verticalement (transform:translateY(50%), même
+   technique que .cuve__shield) — bottom posé en JS à verseBottom/2,
+   soit le milieu de la portion remplie à ce stade (0 à verseBottom),
+   pas juste sous le repère. */
+.cuve__verse-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  transform: translateY(50%);
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--papier-rgb), 0.8);
+}
+
+.cuve-col__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3125cqw;
+}
+
+.cuve-col__label {
+  font-weight: 700;
+  font-size: 1.23046875cqw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cuve-col__desc {
+  margin: 0;
+  max-width: 16.40625cqw;
+  font-weight: 450;
+  font-size: 1.015625cqw;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(var(--chap-ink-rgb), 0.65);
+}
+
+/* ---------- Mécanisme illustratif (états 1-6) ---------- */
+
+/* Couche d'intérêts, posée sur le capital (.cuve__fill, en dessous,
+   couleur pleine) : encre semi-transparente + liseré pointillé au départ
+   (posée en style inline par introCuveHtml, jamais cette règle — sa
+   couleur change en cours de route). Sa hauteur ne rétrécit jamais une
+   fois montée (état 2) ; sa couleur, elle, passe du gris au vert au clic
+   suivant la couverture rouge (bancaire) ou le bouclier (assurance vie)
+   — voir data-reveal-bg, js/reveal.js. */
+.cuve__interest-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  border-top: 0.078125cqw dashed rgba(var(--chap-ink-rgb), 0.45);
+}
+
+.cuve__interest-fill[data-reveal] {
+  transition-duration: calc(var(--chap-duration-move) * 2);
+  transition-property: height, background-color;
+}
+
+/* Zone effacée (bancaire, état 3+) : plutôt qu'un vide, la place laissée
+   par la portion partie en impôt se colorie en rouge — se déploie
+   elle-même de haut en bas (scaleY depuis le haut, voir js/reveal.js) à
+   son apparition, lentement (x4 le mouvement standard) pour bien la
+   voir recouvrir la zone. */
+.cuve__erased {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transform-origin: top;
+  background: var(--rouge);
+}
+
+.cuve__erased[data-reveal] {
+  transition-duration: calc(var(--chap-duration-move) * 4);
+}
+
+/* Bouclier (assurance vie, état 4) : posé au milieu de la zone grise
+   (intérêts) pour MONTRER l'absence de fuite, plutôt que de laisser
+   deviner qu'il ne se passe rien — centré sur les deux axes (bottom au
+   centre de la bande, posé en JS + translate ici). Centrage statique sur
+   le conteneur, l'apparition (scale) est sur l'enfant — les deux ne
+   peuvent pas partager la même déclaration transform sans se marcher
+   dessus. */
+.cuve__shield {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.cuve__shield-inner {
+  display: block;
+  transition: opacity var(--chap-duration-move) var(--chap-ease-move),
+    transform var(--chap-duration-move) var(--chap-ease-move);
+}
+
+.cuve__shield-inner .chap-icon {
+  width: 3.125cqw;
+  height: 3.125cqw;
+}
+
+.cuve__shield-inner.is-entering {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+/* Tremblement "elle ne bouge pas" (état 4, assurance vie) — même esprit
+   que le shake macOS/iOS (mot de passe refusé) : quelques allers-retours
+   horizontaux rapides, amplitude décroissante, puis retour à zéro. Une
+   seule fois à l'apparition du bouclier (voir cuveCls en JS), pas une
+   boucle. */
+@keyframes cuve-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-0.390625cqw);
+  }
+  40% {
+    transform: translateX(0.3125cqw);
+  }
+  60% {
+    transform: translateX(-0.234375cqw);
+  }
+  80% {
+    transform: translateX(0.15625cqw);
+  }
+}
+
+.cuve--shake {
+  animation: cuve-shake 500ms ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cuve--shake {
+    animation: none;
+  }
+}
+
+/* À côté du rectangle qu'il commente, pas sous la colonne — enfant de
+   .cuve (position:relative), centré verticalement sur son point médian
+   (bottom posé en JS + translateY(50%) ici, même technique que
+   .cuve__shield) plutôt que dans le flux du pied de colonne. */
+.cuve-col__badge {
+  position: absolute;
+  font-weight: 700;
+  font-size: 1.71875cqw;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transform: translateY(50%);
+}
+
+.cuve-col__badge--left {
+  right: 100%;
+  margin-right: 1.5625cqw;
+  text-align: right;
+}
+
+.cuve-col__badge--right {
+  left: 100%;
+  margin-left: 1.5625cqw;
+  text-align: left;
+}
+
+/* Réserve sa place dès l'état 1 (voir introCuveHtml) : seule l'opacité
+   change à l'apparition, jamais sa présence dans le DOM. */
+.cuve-col__badge--invisible {
+  opacity: 0;
+}
+
+.cuve-col__badge--vert {
+  color: var(--vert);
+}
+
+.cuve-col__badge--rouge {
+  color: var(--rouge);
+}
+
+/* Overlay, pas une colonne de grille (voir .impact-fiscal__grid) —
+   positionné à gauche de .cuve (position:relative, voir plus haut),
+   jamais dans son flux : les deux cuves restent centrées sur la slide
+   que ce panneau soit affiché ou non. Texte aligné à droite pour "
+   pointer" vers la cuve bancaire, juste à côté. `bottom` posé en style
+   inline (voir chiffresRender en JS, calé sur le vide au-dessus du
+   remplissage réel) : translateY(50%) centre le panneau sur ce repère
+   quelle que soit sa propre hauteur, même technique que
+   .cuve__verse-label. */
+.impact-fiscal__ecart {
+  position: absolute;
+  right: 100%;
+  margin-right: 3.28125cqw;
+  width: 15.625cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.78125cqw;
+  text-align: right;
+  transform: translateY(50%);
+}
+
+.impact-fiscal__ecart-label {
+  font-weight: 700;
+  font-size: 1.23046875cqw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}
+
+.impact-fiscal__ecart-value {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: max(2rem, 4.375cqw);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- Gabarit "Fiscalité des rachats" (slide 6, anneau à 6 états) ---------- */
+
+.fiscalite-rachats {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.fiscalite-rachats__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fiscalite-rachats__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+.fiscalite-rachats__stage {
+  margin: auto 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3.59375cqw;
+}
+
+.fiscalite-rachats__svg {
+  flex: none;
+  width: 21.875cqw;
+  height: 21.875cqw;
+  display: block;
+}
+
+/* Capital, intérêts et coin détachable partagent tous le repère du
+   viewBox (200x200, centre 100,100) — voir fiscalite-rachats.js : le
+   capital et le premier anneau grandissent depuis le centre, les anneaux
+   suivants se déploient en rotation (stroke-dashoffset), le coin se
+   détache par translation. Sans rebond partout (cubic-bezier(0.4,0,0.2,
+   1) n'a pas de dépassement) mais à des vitesses distinctes par effet
+   (voir chaque règle ci-dessous) — pas un seul réglage global. */
+.fiscalite-rachats__capital,
+.fiscalite-rachats__interets,
+.fiscalite-rachats__coin {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+}
+
+/* Capital (état 2) et coin qui se détache (états 6-7) : x2 le mouvement
+   standard. */
+.fiscalite-rachats__capital[data-reveal],
+.fiscalite-rachats__coin[data-reveal] {
+  transition-duration: calc(var(--chap-duration-move) * 2);
+}
+
+/* Premier anneau (neutre, état 3) : grandit depuis le centre comme le
+   capital, mais ralenti (x4) à la demande. */
+.fiscalite-rachats__interets[data-reveal] {
+  transition-duration: calc(var(--chap-duration-move) * 4);
+}
+
+/* Anneaux bleu/vert (états 4-5) qui se déploient dans le sens horaire
+   pour recouvrir le précédent (bleu sur neutre : on ajoute l'impôt ;
+   vert sur bleu : on l'efface) — un cercle SVG se trace depuis 3h dans
+   le sens horaire, ce qui donne l'effet "horaire" recherché sans
+   dessiner d'arc à la main. Vitesse divisée par deux (x4) par rapport au
+   réglage initial (x2). */
+.fiscalite-rachats__interets circle[data-reveal] {
+  transition: stroke-dashoffset calc(var(--chap-duration-move) * 4) var(--chap-ease-move);
+}
+
+/* Coin des intérêts (état 7) : même principe sur un arc épais plutôt
+   qu'un cercle complet (voir interetsCoinArcHtml) — le vert se déploie
+   dans le sens horaire par-dessus le bleu, à la place de l'ancien
+   détachement du coin (il ne bouge plus à cet état) : vitesse alignée
+   sur l'effet qu'il remplace (x2), pas sur celle, plus lente, des
+   anneaux. */
+.fiscalite-rachats__interets path[data-reveal] {
+  transition: stroke-dashoffset calc(var(--chap-duration-move) * 2) var(--chap-ease-move);
+}
+
+.fiscalite-rachats__legend {
+  display: flex;
+  flex-direction: column;
+  gap: 1.328125cqw;
+  width: 30.46875cqw;
+}
+
+.fiscalite-rachats__entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9375cqw;
+}
+
+.fiscalite-rachats__dot {
+  flex: none;
+  width: 1.015625cqw;
+  height: 1.015625cqw;
+  margin-top: 0.3125cqw;
+}
+
+.fiscalite-rachats__entry-text {
+  font-weight: 450;
+  font-size: 1.40625cqw;
+  line-height: 1.4;
+}
+
+/* Hauteur réservée fixe, que les blocs avant8/apres8 soient présents ou
+   non (états 1 à 4 n'en ont pas) : sinon le disque au-dessus (centré via
+   margin:auto sur .fiscalite-rachats__stage) dérive verticalement d'un
+   état à l'autre selon que ce bloc est vide ou rempli. "Après 8 ans"
+   empilé SOUS "avant 8 ans" (pas à sa droite) : min-height calée sur le
+   total des deux blocs l'un sous l'autre, pas sur le plus grand des
+   deux côte à côte. */
+.fiscalite-rachats__rules {
+  flex: none;
+  margin-top: auto;
+  min-height: 21.5cqw;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.46875cqw;
+}
+
+.rachat-avant8 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625cqw;
+  padding-top: 0.859375cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.25);
+}
+
+/* Ligne "LABEL : texte" réutilisée par .rachat-avant8 (le bloc entier
+   est cette seule ligne) et par l'intro de .rachat-apres8 (même
+   traitement, une ligne parmi d'autres dans son bloc) — un seul
+   vocabulaire, pas une variante par bloc. */
+.rachat-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625cqw;
+}
+
+/* Même taille/couleur que .transmission__section-title ("VERSEMENTS
+   AVANT 70 ANS", slide "Transmission") — un seul traitement de libellé
+   de section dans tout le deck, pas une variante par gabarit. */
+.rachat-line__label {
+  flex: none;
+  font-weight: 700;
+  font-size: 1.25cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 1);
+}
+
+/* Utilisée en <span> (première ligne, à côté du label) ou en <p>
+   (lignes suivantes, empilées dessous, voir apres8Html) — margin:0 pour
+   que ce soit le gap du conteneur qui règle l'espacement, jamais la
+   marge par défaut du <p>. */
+.rachat-line__text {
+  margin: 0;
+  font-weight: 450;
+  font-size: 1.40625cqw;
+  line-height: 1.45;
+  color: rgba(var(--chap-ink-rgb), 0.7);
+}
+
+/* Même filet d'en-tête que .rachat-avant8 (pas plus épais/foncé) : ce
+   sont deux blocs parallèles ("avant" / "après"), pas une hiérarchie
+   entre eux — un seul traitement de filet dans tout le gabarit. */
+/* Grille à 2 colonnes (label, contenu) plutôt qu'un empilement simple :
+   la 1re phrase suit le label sur sa rangée (colonne 2), les lignes
+   suivantes ET les montants restent tous alignés sous le DÉBUT de
+   cette phrase (même colonne 2), pas sous le label — voir
+   apres8Html en JS et les règles .rachat-line__label/__text ci-dessous. */
+.rachat-apres8 {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 0.625cqw;
+  row-gap: 0.625cqw;
+  padding-top: 0.859375cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.25);
+}
+
+.rachat-apres8 .rachat-line__label {
+  grid-column: 1;
+}
+
+.rachat-apres8 .rachat-line__text,
+.rachat-apres8 .rachat-apres8__amounts {
+  grid-column: 2;
+}
+
+.rachat-apres8__amounts {
+  display: flex;
+  align-items: center;
+  gap: 3.125cqw;
+}
+
+/* Icône à côté du montant, pas au-dessus : une ligne (pictogramme +
+   colonne valeur/qui), pas un empilement. */
+.rachat-apres8__amount {
+  display: flex;
+  align-items: center;
+  gap: 0.9375cqw;
+}
+
+.rachat-apres8__amount-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.46875cqw;
+}
+
+.rachat-apres8__amount .chap-icon {
+  flex: none;
+  width: 2.65625cqw;
+  height: 2.65625cqw;
+}
+
+.rachat-apres8__value {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: max(2rem, 4.375cqw);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--vert);
+}
+
+.rachat-apres8__who {
+  font-weight: 700;
+  font-size: 0.9375cqw;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}
+
+/* ---------- Gabarit "Transmission" (2 colonnes : principe / donation) ---------- */
+
+.transmission {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.transmission__intro {
+  padding-top: 2.34375cqw;
+  margin-bottom: 2.5cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.703125cqw;
+}
+
+.transmission__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+.transmission__sub {
+  margin: 0;
+  font-weight: 450;
+  font-size: 1.640625cqw;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+/* Occupe l'espace restant entre l'intro et le pied de page (conditions
+   "après 70 ans") et y centre la grille verticalement — plutôt que des
+   margin:auto sur la grille elle-même, qui la centreraient sur TOUTE la
+   hauteur restante de .transmission, empiétant sur l'espace du pied de
+   page réservé plus bas. */
+.transmission__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.transmission__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  column-gap: 3.90625cqw;
+  align-items: center;
+}
+
+.transmission__divider {
+  align-self: stretch;
+  background: rgba(var(--chap-ink-rgb), 0.16);
+}
+
+/* Colonne gauche : le principe (état 2, au clic). Toujours rendue avec
+   son vrai contenu (voir --invisible, même principe que .deux-poches__
+   col) pour que la grille garde sa hauteur pleine dès l'arrivée — rien
+   ne bouge quand ce bloc apparaît. */
+.transmission__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.09375cqw;
+}
+
+.transmission__col--invisible {
+  opacity: 0;
+}
+
+.transmission__col .chap-icon {
+  flex: none;
+}
+
+.transmission__clause-label {
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}
+
+.transmission__clause-text {
+  margin: 0;
+  max-width: 26.5625cqw;
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: max(1.3rem, 1.875cqw);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.transmission__col--droite {
+  align-items: stretch;
+}
+
+/* Les deux blocs empilés de la colonne droite (avant 70 ans / après 70
+   ans, états 3 et 4) — même principe --invisible que la colonne gauche,
+   pour que la grille garde toujours sa hauteur pleine. */
+.transmission__block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.703125cqw;
+}
+
+.transmission__block--invisible {
+  opacity: 0;
+}
+
+/* Fondu simple pour le conteneur (pas le zoom générique de .is-entering,
+   qui entrerait en conflit avec les animations internes du premier bloc
+   — le rail qui se déroule, chaque ligne d'enfant qui descend en
+   cascade, voir plus bas) : transform neutralisé, seule l'opacité
+   transitionne. Même traitement sur les deux blocs, par cohérence. */
+.transmission__block.is-entering {
+  transform: none;
+}
+
+.transmission__donation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.71875cqw;
+}
+
+.transmission__source {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625cqw;
+  width: 100%;
+}
+
+.transmission__source .chap-icon {
+  flex: none;
+}
+
+.transmission__source-label {
+  font-weight: 700;
+  font-size: 0.78125cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+/* Arbre capital -> bénéficiaires en un seul SVG (voir treeHtml en JS) :
+   la barre horizontale et les trois verticales sont des segments d'un
+   même repère de coordonnées, donc jointes exactement là où elles se
+   touchent — plus robuste qu'aligner des éléments HTML séparés en
+   pourcentages (bug remonté : la barre et les traits ne se touchaient
+   pas). Chaque segment se dessine par stroke-dashoffset (même technique
+   que les anneaux de "Fiscalité des rachats"), la barre d'abord puis
+   chaque verticale en cascade (délai croissant par index, voir
+   --branch-index posé en style inline). */
+.transmission__tree {
+  width: 100%;
+  height: 3.359375cqw;
+  overflow: visible;
+}
+
+.transmission__tree-rail,
+.transmission__tree-branch {
+  fill: none;
+  stroke: var(--or);
+  stroke-width: 1.5;
+}
+
+.transmission__tree-rail[data-reveal],
+.transmission__tree-branch[data-reveal] {
+  transition: stroke-dashoffset calc(var(--chap-duration-move) * 1.5) var(--chap-ease-move);
+}
+
+.transmission__tree-branch[data-reveal] {
+  /* Démarre une fois la barre horizontale tracée (même durée qu'elle,
+     1.5x), puis un délai croissant par branche pour la cascade. */
+  transition-delay: calc(var(--chap-duration-move) * 1.5 + var(--chap-duration-fade) * var(--branch-index, 0));
+}
+
+/* Grid plutôt que flex:1 — des colonnes réellement égales quel que soit
+   le contenu (le texte "..." et les montants n'ont pas la même largeur
+   naturelle ; flex:1 seul, sans flex-basis forcé, laissait ce contenu
+   perturber la répartition et désaligner les branches par rapport aux
+   x fixes de l'arbre SVG — bug remonté). Nombre de colonnes posé en
+   style inline par render() (bénéficiaires + la branche "..."). */
+.transmission__branches {
+  display: grid;
+  width: 100%;
+  column-gap: 1cqw;
+}
+
+.transmission__branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625cqw;
+}
+
+.transmission__branch .chap-icon {
+  flex: none;
+}
+
+/* 4e branche ("...", voir etcBranchHtml en JS) : un espaceur muet de la
+   même hauteur que l'icône des branches chiffrées (voir le 40 passé à
+   iconSvg("enfant", ...) dans transmission.js — à resynchroniser si
+   cette taille change), pour que le "..." s'aligne avec les montants à
+   côté plutôt que de remonter en haut de la colonne (il n'a pas d'icône
+   au-dessus, contrairement aux autres). */
+.transmission__branch-etc-spacer {
+  display: block;
+  height: 40px;
+}
+
+.transmission__branch-etc {
+  /* Sa boîte de texte commence au même endroit que .transmission__
+     branch-montant (même position, même parent) mais est plus haute
+     (plus grande taille de police) : sans correction, les points
+     "..." rendent visuellement plus bas que le bas des montants à
+     côté — remonté d'autant. */
+  margin-top: -1.09375cqw;
+  font-family: var(--font-serif-chapitre);
+  font-size: 2.1875cqw;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+.transmission__branch-montant {
+  /* Chaque colonne (flex:1, sans gap — nécessaire pour rester alignée
+     avec les x fixes de l'arbre SVG, voir treeHtml) ne fait qu'un
+     tiers de la largeur de .transmission__branches : à une taille
+     trop grande, le texte remplit toute la colonne et les 3 montants
+     se touchent, sans respiration entre eux (bug déjà remonté une
+     fois — vérifié à l'écran après ce nouvel agrandissement,
+     toujours de la place). */
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.45cqw;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.transmission__donation-note {
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+  font-weight: 450;
+  font-size: 1.328125cqw;
+  line-height: 1.45;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+/* Titre de section dans la colonne droite — "Versements avant 70 ans"
+   au-dessus du dessin (icône + arbre) qu'il annonce, "Versements après
+   70 ans" au-dessus de ses conditions : même registre que .transmission
+   __source-label (CAPITAL TRANSMIS), réutilisé comme repère commun aux
+   deux blocs empilés plutôt qu'un style par bloc. Centré par rapport à
+   la colonne droite (héritage de text-align:center sur .transmission__
+   col), pas par rapport à la slide entière — bug remonté sur l'ancien
+   pied de page pleine largeur. */
+.transmission__section-title {
+  display: block;
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 1);
+}
+
+.transmission__section-title--apres70 {
+  margin-top: 1.71875cqw;
+  padding-top: 1.328125cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.16);
+}
+
+/* Deux faits distincts (abattement sur le capital, exonération sur les
+   plus-values) — bullet list plutôt qu'une phrase unique, même langage
+   que .cloture-d__bullets. Bloc centré comme le reste de la colonne
+   (héritage align-items:center sur .transmission__block, voir plus
+   haut) ; le texte, lui, reste aligné à gauche À L'INTÉRIEUR du bloc
+   (align-items:flex-start sur .transmission__footer-bullets) — sinon le
+   tiret de chaque puce se retrouverait à une position différente d'une
+   ligne à l'autre. */
+.transmission__footer-bullets {
+  margin-top: 0.625cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.46875cqw;
+}
+
+.transmission__footer-bullet {
+  display: flex;
+  align-items: baseline;
+  gap: 0.78125cqw;
+}
+
+.transmission__footer-bullet-dash {
+  flex: none;
+  width: 0.9375cqw;
+  height: 0.078125cqw;
+  background: var(--or);
+  transform: translateY(-0.328125cqw);
+}
+
+.transmission__footer-bullet-text {
+  font-weight: 450;
+  font-size: 1.328125cqw;
+  line-height: 1.5;
+  text-align: left;
+  color: rgba(var(--chap-ink-rgb), 0.68);
+}
+
+/* ---------- Gabarit "Comment ça marche" (chapitre SCPI) ---------- */
+
+.scpi-mecanisme {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.scpi-mecanisme__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scpi-mecanisme__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+.scpi-mecanisme__stage {
+  margin: auto 0;
+  position: relative;
+  width: 100%;
+  height: 30.625cqw;
+}
+
+.scpi-mecanisme__lines {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.scpi-mecanisme__box {
+  position: absolute;
+  box-sizing: border-box;
+  border: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+  padding: 1.40625cqw 1.5625cqw 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.703125cqw;
+}
+
+.scpi-mecanisme__box--amf,
+.scpi-mecanisme__box--center {
+  justify-content: center;
+  padding-top: 0;
+}
+
+/* Titre + registre d'icônes centrés comme un seul bloc (justify-
+   content:center) plutôt que titre en haut / icônes plaquées en bas
+   (ex margin-top:auto sur .scpi-mecanisme__actifs) : la case a grandi
+   (voir BOX_TOP_SHIFT_CQW dans scpi-mecanisme.js, pour loger le
+   pictogramme "Souscription de part" au-dessus de la flèche) sans que
+   son contenu propre en ait besoin — centrer le bloc répartit l'espace
+   en trop en haut ET en bas plutôt que de l'empiler entre le titre et
+   les icônes. */
+.scpi-mecanisme__box--vehicule {
+  border-top: 0.15625cqw solid var(--or);
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Case centrale : titre centré plutôt qu'aligné à gauche comme les deux
+   cases voisines — cette case est la seule à porter un contenu propre
+   en dessous (le registre de pictogrammes), elle peut se démarquer. */
+.scpi-mecanisme__box--vehicule .scpi-mecanisme__box-head {
+  justify-content: center;
+  text-align: center;
+}
+
+.scpi-mecanisme__box-head {
+  display: flex;
+  align-items: center;
+  gap: 0.625cqw;
+}
+
+.scpi-mecanisme__box-head .chap-icon {
+  flex: none;
+  width: 1.875cqw;
+  height: 1.875cqw;
+}
+
+/* Case à logo client (ex. "Société de gestion", voir pngIcon dans
+   boxHtml) : le logo surmonte le titre au lieu de le côtoyer — même
+   display:flex/gap que .scpi-mecanisme__box-head, juste l'axe changé
+   (align-items:center y centre alors horizontalement, pas verticalement). */
+.scpi-mecanisme__box-head--stacked {
+  flex-direction: column;
+}
+
+.scpi-mecanisme__box-png {
+  width: auto;
+}
+
+.scpi-mecanisme__box-titre {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.71875cqw;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.scpi-mecanisme__box-texte {
+  margin: 0;
+  font-weight: 450;
+  font-size: 1.015625cqw;
+  line-height: 1.45;
+  color: rgba(var(--chap-ink-rgb), 0.7);
+}
+
+.scpi-mecanisme__amf-note {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.46875cqw;
+  font-weight: 700;
+  font-size: 0.7421875cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+.scpi-mecanisme__amf-note-icon {
+  flex: none;
+  width: auto;
+  height: 1.875cqw;
+}
+
+/* Un pictogramme par classe d'actifs (bureaux/commerces/santé/
+   hôtellerie, voir ACTIF_ICONS en JS) plutôt qu'une puce de texte —
+   4 colonnes égales pour rester lisibles même sur le mot le plus long
+   ("Hôtellerie"), jamais un flex-wrap qui recase au hasard. */
+/* 2×2 plutôt qu'une seule rangée de 4 : occupe mieux la hauteur
+   disponible sous le titre (plus d'icône dans l'en-tête, voir
+   scpi-mecanisme.js) et permet des pictogrammes bien plus grands, plus
+   lisibles au premier coup d'œil que serrés sur une rangée. */
+.scpi-mecanisme__actifs {
+  padding: 0.859375cqw 0.9375cqw 0;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  justify-content: center;
+  column-gap: 2.34375cqw;
+  row-gap: 1.5625cqw;
+}
+
+.scpi-mecanisme__actif {
+  display: flex;
+  justify-content: center;
+}
+
+/* Hauteur fixe, largeur libre (pas un carré) : ces pictogrammes fournis
+   tels quels (voir ACTIF_ICONS_RAW dans scpi-mecanisme.js) n'ont pas
+   tous le même ratio — les forcer dans une case carrée les faisait
+   paraître de tailles inégales (l'hôtel, en portrait, ou le commerce,
+   en paysage, y flottaient plus petits que la tour de bureaux, presque
+   carrée). À hauteur identique, chacun garde ses proportions d'origine
+   et occupe vraiment sa case. */
+.scpi-mecanisme__actif .chap-icon {
+  flex: none;
+  width: auto;
+  height: 3.75cqw;
+}
+
+.scpi-mecanisme__flow {
+  position: absolute;
+  font-weight: 700;
+  font-size: 0.7421875cqw;
+  line-height: 1.35;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+/* Pictogramme au-dessus de la flèche investisseur<->SCPI (état
+   transitoire "Souscription de part", voir scpi-mecanisme.js) — même
+   largeur que .scpi-mecanisme__flow pour rester centré sur la flèche
+   qu'il annote. */
+.scpi-mecanisme__flow-icon {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+}
+
+/* Hauteur posée en style inline (SOUSCRIPTION_ICON_HEIGHT_CQW, voir
+   scpi-mecanisme.js) — le "top" du pictogramme en dérive pour rester
+   centré entre le haut des cases et la flèche, jamais désynchronisé si
+   la taille change. */
+.scpi-mecanisme__flow-icon img {
+  width: auto;
+}
+
+/* "Distribution de revenus" seul (voir maskColor/arrowAnnotationHtml
+   dans scpi-mecanisme.js) : le PNG sert de masque à un aplat de couleur
+   (background-color) plutôt que d'être affiché tel quel — seul moyen de
+   le teinter en doré sans refaire l'asset (fourni en noir, comme les
+   autres pictogrammes du schéma). Largeur/hauteur posées en style
+   inline (pas de largeur intrinsèque auto-déduite comme <img>). */
+.scpi-mecanisme__flow-icon-mask {
+  display: block;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.scpi-mecanisme__flow--or {
+  color: var(--or);
+}
+
+/* Encre pleine (pas l'opacité .6 par défaut) : "Souscription de part"
+   se lit sous le pictogramme du client, pas comme les autres repères
+   discrets du schéma. */
+.scpi-mecanisme__flow--noir {
+  color: rgb(var(--chap-ink-rgb));
+}
+
+/* Investisseur seul (états 1-2, voir scpi-mecanisme.js) : pas de case,
+   juste le pictogramme, à la même largeur que l'ancienne case
+   "L'investisseur" (les flèches s'y raccrochent sans changement) mais
+   sa propre hauteur (top calculé depuis INVEST_SCPI_ARROW_Y_PX côté JS,
+   pas depuis la hauteur de l'ancienne case) : centré sur l'ordonnée
+   réelle de la flèche, pas sur le milieu d'une case qui n'existe plus.
+   justify-content:flex-end (pas center) : sans bordure de case pour
+   ancrer l'œil, le pictogramme doit lui-même se rapprocher de la
+   flèche — flush contre le bord droit de cette zone, à la même
+   distance de la flèche que la case SCPI (dont le bord touche déjà
+   ARROW_GAP_PX plus loin, voir scpi-mecanisme.js). */
+.scpi-mecanisme__solo {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.scpi-mecanisme__solo .chap-icon {
+  width: 5cqw;
+  height: 5cqw;
+}
+
+/* Cercle des associés (état 3+, voir scpi-mecanisme.js) : remplace
+   définitivement le pictogramme seul, dans le même emplacement. Cadre
+   circulaire plutôt que la case rectangulaire des autres intervenants —
+   il représente un collectif, pas un intervenant unique.
+   align-items:flex-end (pas center) : même logique que .scpi-
+   mecanisme__solo, pour que l'anneau reste collé au bord droit de la
+   zone, à égale distance de la flèche que la case SCPI. Le titre
+   "Associé" a la même largeur que l'anneau (voir CIRCLE_D_CQW côté JS)
+   et se centre DEDANS (text-align:center) : même bord droit que
+   l'anneau, mais texte centré sur son milieu à lui, pas sur celui de
+   toute la zone. */
+.scpi-mecanisme__cercle {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.625cqw;
+}
+
+.scpi-mecanisme__cercle-ring {
+  position: relative;
+  flex: none;
+  border-radius: 50%;
+  border: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+}
+
+/* Positionnées via transform (calc(-50% + dx/dy), voir
+   scpi-mecanisme.js) — dx/dy calculés sur un anneau, jamais saisis à la
+   main un par un. */
+.scpi-mecanisme__cercle-personne {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+.scpi-mecanisme__cercle-personne .chap-icon {
+  width: 1.6cqw;
+  height: 1.6cqw;
+}
+
+/* Celui du centre (voir CENTER_PERSON_SIZE_CQW dans scpi-mecanisme.js) :
+   même taille que le pictogramme seul des états 1-2 (5cqw), plus grand
+   que les silhouettes de l'anneau, pour montrer que l'investisseur (seul
+   jusqu'à l'état précédent) est désormais associé sans se fondre dans le
+   collectif qui l'entoure. */
+.scpi-mecanisme__cercle-personne--centre .chap-icon {
+  width: 5cqw;
+  height: 5cqw;
+}
+
+/* Largeur posée en style inline (= CIRCLE_D_CQW, voir
+   associeCercleHtml) — text-align:center y centre "Associé" sur le
+   milieu de l'anneau, pas sur celui de toute la zone. */
+.scpi-mecanisme__cercle-titre {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.71875cqw;
+  line-height: 1;
+  text-align: center;
+}
+
+/* ---------- Gabarit "Les atouts" (chapitre SCPI) ---------- */
+
+.atouts {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.atouts__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.atouts__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+/* min-height calée sur l'atout qui a le plus de puces (4, "placement
+   sur-mesure") : la scène garde toujours la même hauteur d'un atout à
+   l'autre — seul l'espace sous les puces les plus courtes reste vide,
+   jamais un repère (stepper) qui se déplace. */
+.atouts__stage {
+  margin: auto 0;
+  width: 100%;
+  min-height: 28.125cqw;
+  display: flex;
+}
+
+/* Largeur fixe : le stepper ne doit jamais se redimensionner selon la
+   longueur des libellés (chacun a la même largeur de colonne, quel que
+   soit l'atout actif). */
+.atouts__side {
+  position: relative;
+  flex: none;
+  width: 32.8125cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.atouts__side-line {
+  position: absolute;
+  left: 2.1875cqw;
+  top: 2.1875cqw;
+  bottom: 2.1875cqw;
+  width: 0.078125cqw;
+  background: rgba(var(--chap-ink-rgb), 0.16);
+}
+
+.atouts__step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.71875cqw;
+}
+
+.atouts__step-circle {
+  flex: none;
+  width: 5.46875cqw;
+  height: 5.46875cqw;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+  background: var(--papier);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.atouts__step--active .atouts__step-circle {
+  border-color: var(--or);
+  background: var(--or);
+}
+
+.atouts__step-circle .chap-icon {
+  width: 2.65625cqw;
+  height: 2.65625cqw;
+}
+
+.atouts__step-label {
+  font-weight: 450;
+  font-size: 1.5625cqw;
+  letter-spacing: 0.04em;
+  color: rgba(var(--chap-ink-rgb), 0.4);
+}
+
+.atouts__step--active .atouts__step-label {
+  font-weight: 700;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+/* Filet vertical + contenu centré à égale distance du haut et du bas
+   de la scène (justify-content:center) : jamais de vide disproportionné
+   sous les puces les plus courtes, comme l'aurait fait un flex-start. */
+.atouts__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-left: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.16);
+  padding-left: 4.375cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2.1875cqw;
+}
+
+.atouts__kicker {
+  font-weight: 700;
+  font-size: 1.640625cqw;
+  letter-spacing: 0.1em;
+  color: var(--or);
+}
+
+/* margin-left : les tirets ne démarrent pas à l'aplomb du titre doré
+   au-dessus (voir .atouts__kicker) — un léger retrait les distingue
+   d'un second niveau de titre plutôt que de lire comme alignés dessus. */
+.atouts__bullets {
+  margin-left: 1.09375cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.875cqw;
+}
+
+.atouts__bullet {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25cqw;
+}
+
+/* Toujours rendue, même au-delà de visibleCount (voir atouts.js) : la
+   liste garde sa hauteur pleine dès le premier tiret, sinon le panneau
+   (centré via justify-content:center sur .atouts__content) sauterait de
+   position à chaque clic. */
+.atouts__bullet--invisible {
+  opacity: 0;
+}
+
+.atouts__bullet-dash {
+  flex: none;
+  font-size: 1.171875cqw;
+  color: var(--or);
+}
+
+.atouts__bullet-text {
+  font-weight: 450;
+  font-size: 1.5625cqw;
+  line-height: 1.5;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+/* ---------- Gabarit "Investir en financement" (chapitre SCPI) ----------
+   Révélation progressive à 3 états (opts.stateIndex direct, comme
+   "Impact fiscal") : Phase 1 Constitution / Phase 2 Perception / Phase 3
+   Transmission — une seule slide, jamais 3 slides séparées. Les blocs
+   déjà affichés (mensualité + barre, complément de revenu) restent dans
+   le DOM et s'estompent (opacité posée en style inline par le JS) plutôt
+   que de disparaître : l'axe temporel (Aujourd'hui -> fin de financement
+   -> transmission) reste lisible d'un bout à l'autre. */
+
+.scpi-financement {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.scpi-financement__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.703125cqw;
+}
+
+.scpi-financement__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+/* Sous-titre fixe (slide.sousTitre), toujours affiché — même registre
+   que .transmission__sub (slide "Assurance vie pour protéger ses
+   proches") : une seule ligne, rapprochée du titre par le gap ci-dessus
+   plutôt que la longue marge qu'exigeait l'ancienne phrase révélée à
+   partir de l'état 4 (retirée, voir scpi-financement.js). */
+.scpi-financement__sub {
+  margin: 0;
+  font-weight: 450;
+  font-size: 1.640625cqw;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+.scpi-financement__stage {
+  margin: auto 0;
+  position: relative;
+  width: 100%;
+  height: 32.4375cqw;
+}
+
+/* Patrimoine cible, au-dessus de la colonne (états 1-6, voir
+   scpi-financement.js) : centré sur la colonne elle-même
+   (transform:translateX(-50%) + left posé en style inline, même
+   technique que .scpi-financement__axis-label--center). */
+.scpi-financement__capital-cible {
+  position: absolute;
+  top: 2.28125cqw;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.scpi-financement__capital-cible-value {
+  display: block;
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 2.5cqw;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+.scpi-financement__bar {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.scpi-financement__bar-effort {
+  flex: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--bleu);
+  display: flex;
+  align-items: center;
+  padding-left: 1.25cqw;
+}
+
+.scpi-financement__bar-revenu {
+  flex: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--or);
+  display: flex;
+  align-items: center;
+  padding-left: 1.25cqw;
+}
+
+.scpi-financement__bar-label {
+  font-weight: 700;
+  font-size: 0.9375cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--papier);
+}
+
+.scpi-financement__bar-label--ink {
+  color: rgba(var(--chap-ink-rgb), 0.75);
+}
+
+/* État 1 : la colonne balayée segment par segment (mois/années de
+   mensualité), gauche à droite — voir scpi-financement.js
+   barSegmentsHtml(). Animation CSS pure (animation-delay par segment),
+   pas le mécanisme data-reveal (transition JS d'un état à l'autre) —
+   celle-ci doit rejouer à chaque montée sur cet état, y compris la
+   toute première fois (avant qu'aucun changement d'état n'ait eu
+   lieu). */
+.scpi-financement__bar-segments {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  gap: 0.078125cqw;
+}
+
+.scpi-financement__bar-segment {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--bleu);
+  transform-origin: bottom;
+  animation: scpi-bar-segment-in var(--chap-duration-move) var(--chap-ease-move) backwards;
+}
+
+@keyframes scpi-bar-segment-in {
+  from {
+    opacity: 0;
+    transform: scaleY(0.15);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scpi-financement__bar-segment {
+    animation: none;
+  }
+}
+
+.scpi-financement__bar-label--overlay {
+  position: absolute;
+  left: 1.25cqw;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Diagramme de l'effet de levier (état 5+, voir scpi-financement.js) —
+   ancré à gauche (left:LEVIER_LEFT, marge fixe après la colonne
+   rétractée) plutôt que centré sur un bloc de texte aujourd'hui retiré.
+   Colonne : titre, puis la rangée (axe, deux colonnes, effet de
+   levier). */
+.scpi-financement__levier {
+  position: absolute;
+  top: 1.5cqw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4.5cqw;
+}
+
+.scpi-financement__levier-title {
+  display: block;
+  font-weight: 600;
+  font-size: 1.5625cqw;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--bleu);
+}
+
+.scpi-financement__levier-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.09375cqw;
+}
+
+/* Axe des ordonnées (montants en €) : hauteur alignée sur celle des
+   colonnes (LEVIER_BAR_MAX_CQW côté JS) pour que bottom:Xcqw sur
+   chaque repère (scpi-financement.js) tombe exactement à la hauteur du
+   sommet de colonne qu'il légende. */
+/* height posée en style inline (LEVIER_BAR_MAX_CQW, voir
+   scpi-financement.js) — jamais dupliquée en dur ici, sous peine de se
+   désynchroniser de la vraie hauteur des colonnes si l'une des deux
+   valeurs change sans l'autre (bug déjà rencontré). */
+/* margin-bottom : .scpi-financement__levier aligne ses enfants par le
+   bas (align-items:flex-end) — sans ce correctif l'axe (haut de
+   LEVIER_BAR_MAX_CQW seulement) se cale sur le bas du DIAGRAMME
+   (colonnes + légende "Sans/Avec financement" sous elles, plus haut que
+   l'axe), et ses repères tombent alors plus bas que le sommet réel des
+   colonnes qu'ils légendent. Valeur = gap de .scpi-financement__levier-
+   col (0.9375cqw) + hauteur de ligne de .scpi-financement__levier-
+   caption (1.09375cqw × line-height 1.2 = 1.3125cqw) — à resynchroniser
+   si l'un de ces deux réglages change. */
+.scpi-financement__levier-axis {
+  position: relative;
+  flex: none;
+  width: 5.625cqw;
+  margin-bottom: 2.25cqw;
+  border-right: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.3);
+}
+
+.scpi-financement__levier-axis-label {
+  position: absolute;
+  right: 0.625cqw;
+  transform: translateY(50%);
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+/* Les deux repères "descriptifs" (ce que chaque niveau représente,
+   plus le montant lui-même — désormais affiché au-dessus de sa colonne,
+   voir .scpi-financement__levier-bar-value) peuvent revenir à la ligne
+   plutôt que forcer une seule ligne très longue : max-width + line-
+   height, text-align:right pour rester lisible malgré le retour. Largeur
+   (width) à revérifier si cette taille de police change encore : déjà
+   au plus juste pour que "Patrimoine immobilier constitué" (le plus
+   long des deux segments coupés par le <br> manuel, voir scpi-
+   financement.js) tienne sur une seule ligne à cette taille.
+   */
+.scpi-financement__levier-axis-label--desc {
+  white-space: normal;
+  width: 20cqw;
+  font-size: 1.0625cqw;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.scpi-financement__levier-axis-label--bleu {
+  color: var(--bleu);
+}
+
+.scpi-financement__levier-axis-label--or {
+  color: var(--or);
+}
+
+/* Deux colonnes à l'échelle l'une de l'autre : "Sans financement"
+   (encre, base commune) et "Avec financement", dont seul l'écart au
+   sommet (scpi-financement__levier-bar-gap, or) EST l'effet de levier —
+   pas deux barres de couleurs différentes sans lien visuel entre elles. */
+.scpi-financement__levier-diagram {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.875cqw;
+}
+
+.scpi-financement__levier-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9375cqw;
+}
+
+/* height posée en style inline (LEVIER_BAR_MAX_CQW) — voir la remarque
+   sur .scpi-financement__levier-axis ci-dessus. */
+/* position:relative : ancre .scpi-financement__levier-bar-marker (ligne
+   pointillée), dont le "bottom" doit rester relatif à cette hauteur
+   FIXE (LEVIER_BAR_MAX_CQW) plutôt qu'à celle, animée, de la colonne
+   elle-même — voir markerHtml dans scpi-financement.js. */
+.scpi-financement__levier-bar-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.scpi-financement__levier-bar {
+  position: relative;
+  flex: none;
+  width: 9.375cqw;
+  box-sizing: border-box;
+}
+
+.scpi-financement__levier-bar--effort {
+  background: var(--bleu);
+}
+
+/* Même bleu que "Sans financement" (scpi-financement__levier-bar--
+   effort) EN DESSOUS de la ligne pointillée (effort d'épargne réel,
+   voir .scpi-financement__levier-bar-marker) : les deux représentent le
+   même effort d'épargne réel jusque-là. Au-dessus, c'est toujours du
+   gain — simple réinvestissement des loyers ou effet de levier propre —
+   recouvert en doré par .scpi-financement__levier-bar-gap. */
+.scpi-financement__levier-bar--patrimoine {
+  background: var(--bleu);
+}
+
+/* Démarcation effort réel / patrimoine reconstitué, DANS les deux
+   colonnes (voir markerHtml) — même style que .cuve__verse-line
+   ailleurs dans ce fichier (dashed papier, l'unique traitement qui
+   reste lisible aussi bien sur fond bleu que doré). bottom posé en
+   style inline (effortBarH, une seule fois pour les deux colonnes :
+   même effort réel des deux côtés). */
+.scpi-financement__levier-bar-marker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  /* Deux fois plus épais et bien plus opaque que .cuve__verse-line :
+     ici la ligne traverse un aplat saturé (bleu, ou la jonction
+     bleu/or) sur toute sa largeur, pas un fond clair — la finesse
+     d'origine y devenait invisible (vérifié à l'écran). */
+  border-top: 0.15625cqw dashed rgba(var(--papier-rgb), 0.85);
+}
+
+/* Montant au-dessus de la colonne (40 500 € / 85 000 €) : bottom:100%
+   du bord de la barre ELLE-MÊME (hauteur dynamique, dérivée des
+   montants réels) — reste juste au-dessus quelle que soit sa hauteur,
+   sans recalcul JS. */
+.scpi-financement__levier-bar-value {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.46875cqw;
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.875cqw;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+.scpi-financement__levier-bar-gap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: var(--or);
+}
+
+.scpi-financement__levier-caption {
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+/* Double flèche + repère, le long de l'écart or (scpi-financement__
+   levier-bar-gap) qu'ils annotent — même position/hauteur que lui
+   (position:absolute hérité, height:100%), pas un bloc de texte posé à
+   part en bas à droite du diagramme. */
+.scpi-financement__levier-annotation {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  height: 100%;
+  margin-left: 0.625cqw;
+  display: flex;
+  align-items: center;
+  gap: 0.625cqw;
+}
+
+.scpi-financement__levier-arrow {
+  flex: none;
+  width: 0.625cqw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scpi-financement__levier-arrow-line {
+  flex: 1 1 auto;
+  width: 0.078125cqw;
+  min-height: 0.46875cqw;
+  background: var(--or);
+}
+
+.scpi-financement__levier-arrow-head {
+  flex: none;
+  width: 0;
+  height: 0;
+  border-left: 0.3125cqw solid transparent;
+  border-right: 0.3125cqw solid transparent;
+}
+
+.scpi-financement__levier-arrow-head--up {
+  border-bottom: 0.46875cqw solid var(--or);
+}
+
+.scpi-financement__levier-arrow-head--down {
+  border-top: 0.46875cqw solid var(--or);
+}
+
+.scpi-financement__levier-text {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15625cqw;
+}
+
+.scpi-financement__levier-kicker {
+  font-weight: 700;
+  font-size: 0.9375cqw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+.scpi-financement__levier-value {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 2.109375cqw;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--or);
+}
+
+.scpi-financement__levier-pct {
+  font-family: var(--font-sans-chapitre);
+  font-size: 1.171875cqw;
+  font-weight: 450;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+/* S'arrête juste après le bloc central (largeur posée en style inline,
+   voir AXIS_END_CQW dans scpi-financement.js) plutôt que de courir sous
+   tout le diagramme de levier — celui-ci n'a alors plus besoin de
+   rester au-dessus d'une ligne visible et peut descendre aussi bas que
+   son niveau. */
+.scpi-financement__axis {
+  position: absolute;
+  left: 0;
+  top: 25.9375cqw;
+  height: 0.078125cqw;
+  background: rgba(var(--chap-ink-rgb), 0.3);
+}
+
+/* Pointe vers l'avant : le temps continue au-delà du financement
+   (état 6, "Puis, à vie") — enfant de .scpi-financement__axis, se
+   déplace donc avec elle quand sa largeur change (right:0 suit
+   toujours son bout, pas de valeur à resynchroniser séparément). */
+.scpi-financement__axis-arrow {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 0;
+  height: 0;
+  border-top: 0.3125cqw solid transparent;
+  border-bottom: 0.3125cqw solid transparent;
+  border-left: 0.46875cqw solid rgba(var(--chap-ink-rgb), 0.3);
+}
+
+.scpi-financement__tick {
+  position: absolute;
+  top: 25.9375cqw;
+  width: 0.078125cqw;
+  height: 0.625cqw;
+  background: rgba(var(--chap-ink-rgb), 0.3);
+}
+
+.scpi-financement__axis-label {
+  position: absolute;
+  top: 27.1875cqw;
+  font-weight: 700;
+  font-size: 0.9375cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+.scpi-financement__axis-label--center {
+  transform: translateX(-50%);
+}
+
+/* État 6 : les revenus se poursuivent à vie une fois le financement
+   soldé — sous le repère "25 ans" plutôt qu'une nouvelle case, pour
+   rester un simple prolongement de l'axe (pas un nouveau calcul, voir
+   scpi-financement.js). Kicker + grande valeur (même vocabulaire que le
+   bilan/l'effet de levier), pas une légende discrète : c'est la
+   conclusion de la slide. */
+/* À côté de la pointe de flèche (voir left:AXIS_END_CQW+gap en JS), pas
+   dessous : top calé pour que ce soit la PREMIÈRE ligne ("Puis, à vie",
+   voir .scpi-financement__viager-kicker) qui tombe au niveau de la
+   ligne d'axe (AXIS_TOP_CQW) — valeur/note suivent en dessous — pas le
+   bloc entier centré dessus (qui alignait la ligne de VALEUR, au milieu
+   du bloc, avec la flèche). top = AXIS_TOP_CQW - la moitié de la
+   hauteur de ligne du kicker (1.2890625cqw, mesurée à son font-size
+   actuel 0.859375cqw — à resynchroniser si celui-ci change). Aligné à
+   gauche (pas centré) : le bloc part du point d'ancrage vers la droite,
+   plutôt que de déborder symétriquement de part et d'autre. */
+.scpi-financement__viager {
+  position: absolute;
+  top: 25.29296875cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3125cqw;
+}
+
+.scpi-financement__viager-kicker {
+  font-weight: 700;
+  font-size: 0.859375cqw;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}
+
+.scpi-financement__viager-value {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.875cqw;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--or);
+}
+
+.scpi-financement__viager-note {
+  margin: 0;
+  font-weight: 450;
+  font-size: 0.78125cqw;
+  line-height: 1.4;
+  text-align: left;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+.scpi-financement__footnote {
+  flex: none;
+  margin: 0;
+  padding-top: 0.9375cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.16);
+  font-weight: 450;
+  font-size: 0.8828125cqw;
+  line-height: 1.5;
+  color: rgba(var(--chap-ink-rgb), 0.45);
+}
+
+/* ---------- Gabarit "Délais, versements et liquidité" (chapitre SCPI) ---------- */
+
+.scpi-cadence {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.scpi-cadence__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scpi-cadence__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+/* Plancher explicite à la hauteur d'une case pleine (kicker + icône +
+   titre), plutôt que de compter sur le fait qu'une case révélée est
+   toujours présente pour dimensionner la rangée : .scpi-cadence__stage
+   est centré verticalement dans la slide (margin:auto 0), voir
+   .atouts__stage plus haut dans ce fichier pour la même logique. */
+.scpi-cadence__stage {
+  margin: auto 0;
+  display: flex;
+  gap: 2.34375cqw;
+  min-height: 8cqw;
+}
+
+.scpi-cadence__box {
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+  padding: 1.875cqw 1.875cqw 1.5625cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.09375cqw;
+}
+
+/* Case pas encore révélée : réserve exactement la même place (largeur
+   flex:1, gap) qu'une case pleine, sans trait ni contenu — la rangée ne
+   change jamais de largeur au fil des états (voir CASES, scpi-cadence.js). */
+.scpi-cadence__box--empty {
+  border-color: transparent;
+}
+
+.scpi-cadence__kicker {
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.45);
+}
+
+.scpi-cadence__box-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9375cqw;
+}
+
+.scpi-cadence__box-head .chap-icon {
+  flex: none;
+  width: 2.5cqw;
+  height: 2.5cqw;
+}
+
+.scpi-cadence__titre {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.5cqw;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* ---------- Gabarit "Clôture" (dernière slide du RDV, fond encre à la
+   manière de "Constat") — récap des préconisations retenues, en liste
+   empilée avec puces (.cloture-d__*), sous un habillage partagé
+   .cloture__* (rail, titre, filet or, budget, "à terme"). */
+.cloture {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.cloture__intro {
+  flex: none;
+  padding-top: 2.03125cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cloture__title {
+  margin: 0;
+  font-size: max(1.9rem, 4.0625cqw);
+  color: rgb(var(--chap-ink-rgb));
+}
+
+.cloture__rule {
+  margin-top: 1.5625cqw;
+  width: 5.46875cqw;
+  height: 0.15625cqw;
+  background: var(--or);
+  display: block;
+}
+
+/* Conteneur des deux lignes (voir .cloture__budget-line) — une par
+   fait budgétaire (épargne mensuelle / investissement initial) plutôt
+   qu'une seule phrase à rallonge, chacune sur SA ligne (pas un
+   retour à la ligne automatique dont dépendrait la coupure). */
+.cloture__budget {
+  margin: 1.09375cqw auto 0;
+  max-width: 88cqw;
+}
+
+.cloture__budget-line {
+  margin: 0;
+  font-weight: 450;
+  font-size: 1.5625cqw;
+  line-height: 1.5;
+  text-align: center;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.65);
+}
+
+/* Liste empilée des préconisations — un filet
+   horizontal entre chaque ligne plutôt que des colonnes : le texte (2
+   puces par préconisation) ne tiendrait pas sur un tiers de la largeur.
+   margin-top:auto : même rôle que .cloture__registre ci-dessus, centrée
+   à égale distance entre l'intro et "à terme". */
+.cloture-d__list {
+  flex: none;
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Toujours rendue dès le premier état (voir cloture-detail.js) : la
+   liste garde sa hauteur pleine dès l'arrivée sur la slide, seule
+   l'opacité de chaque ligne change — sinon "à terme" se déplacerait à
+   chaque ligne révélée (même principe que .cloture__item--invisible). */
+.cloture-d__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625cqw;
+  padding: 1.09375cqw 0;
+  border-bottom: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.18);
+}
+
+.cloture-d__row:first-child {
+  padding-top: 0;
+}
+
+.cloture-d__row--last {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.cloture-d__row--invisible {
+  opacity: 0;
+}
+
+.cloture-d__row-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5625cqw;
+}
+
+.cloture-d__row-nom {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.5625cqw;
+  line-height: 1;
+  white-space: nowrap;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+.cloture-d__row-montant {
+  flex: none;
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.5625cqw;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--or);
+}
+
+/* Variante "réflexion" (cloture-reflexion.js) : une question n'est pas
+   une donnée chiffrée — Avenir (pas Bodoni, réservé aux chiffres),
+   mais reste en or : la question occupe la même place qu'un montant
+   dans la variante chiffrée, elle doit se voir au même titre. */
+/* Une ou deux questions empilées (versement programmé + versement
+   initial pour assurance-vie/SCPI en direct ; une seule pour le
+   financement, voir cloture-reflexion.js) — alignées à droite, comme
+   l'aurait été un montant seul. */
+.cloture-d__row-questions {
+  flex: none;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.9375cqw;
+}
+
+.cloture-d__row-question {
+  font-weight: 600;
+  font-size: 1.171875cqw;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--or);
+}
+
+.cloture-d__bullets {
+  margin-top: 0.546875cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.390625cqw;
+}
+
+.cloture-d__bullet {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9375cqw;
+}
+
+.cloture-d__bullet-dash {
+  flex: none;
+  width: 1.09375cqw;
+  height: 0.078125cqw;
+  background: var(--or);
+  transform: translateY(-0.390625cqw);
+}
+
+.cloture-d__bullet-text {
+  font-weight: 450;
+  font-size: 1.015625cqw;
+  line-height: 1.4;
+  color: rgba(var(--chap-ink-rgb), 0.75);
+}
+
+/* "À terme" — conclusion de toute la présentation, mais volontairement
+   discrète (petit, sans-serif, encre atténuée) : une note de bas de
+   page, pas une seconde accroche qui ferait concurrence au registre des
+   préconisations au-dessus. Même traitement que .constat__objectifs
+   (filet au-dessus, margin-top:auto). Toujours dans le flux (voir
+   --invisible) : sa présence pilote le margin-top:auto du bloc
+   au-dessus, le retirer du DOM le décentrerait. */
+.cloture__aterme {
+  flex: none;
+  margin-top: auto;
+  padding-top: 1.09375cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.390625cqw;
+  text-align: center;
+}
+
+.cloture__aterme--invisible {
+  opacity: 0;
+}
+
+.cloture__aterme-label {
+  font-weight: 700;
+  font-size: 0.78125cqw;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.45);
+}
+
+.cloture__aterme-text {
+  margin: 0;
+  max-width: 50cqw;
+  font-family: var(--font-sans-chapitre);
+  font-weight: 450;
+  font-size: 0.9375cqw;
+  line-height: 1.4;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}

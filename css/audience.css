@@ -1,0 +1,19 @@
+/* Écran auditoire — plein écran, projeté/partagé en RDV : contrairement
+   à .slide générique (aperçu solo, voir slides.css), pas de cadre autour
+   de la scène. On retire le padding et l'aspect "carte flottante"
+   (radius + ombre) : la scène 16:9 remplit l'écran bord à bord tant que
+   la fenêtre est proche de ce ratio. Si un lettrage reste (fenêtre plus
+   haute que 16:9, bandes en haut/bas), il est noir — convention
+   projecteur/vidéo, pas un token de la charte (--color-paper-alt aurait
+   été visible et aurait fait "cadre"). */
+
+#stage {
+  --mobile-gutter: 0px;
+  padding: 0;
+  background: #000;
+}
+
+#stage .slide__stage {
+  border-radius: 0;
+  box-shadow: none;
+}

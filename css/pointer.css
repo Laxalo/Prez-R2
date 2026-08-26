@@ -1,0 +1,32 @@
+/* Pointeur laser — partagé par presenter.html (poste présentateur) et
+   audience.html (réplique en temps réel via BroadcastChannel, voir
+   js/channel.js MSG_POINTER). Un seul point, positionné en
+   position:fixed sur les coordonnées écran calculées par chaque page à
+   partir de la position normalisée (0..1) reçue/mesurée sur
+   .slide__stage — pas de dépendance à la mise en page interne du deck. */
+
+.pointer-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(226, 54, 44, 0.95) 0%, rgba(226, 54, 44, 0.55) 55%, rgba(226, 54, 44, 0) 78%);
+  box-shadow: 0 0 10px 3px rgba(226, 54, 44, 0.45);
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 0;
+  transition: opacity 0.08s linear;
+}
+
+.pointer-dot.is-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pointer-dot {
+    transition: none;
+  }
+}

@@ -1,0 +1,11 @@
+.DS_Store
+
+# Copié depuis data/clients/<nom>.json au lancement (voir "Lancer la
+# présentation.command") — jamais la source, ne pas versionner.
+data/deck.json
+
+# Garde-fou : dépôt public — aucun fichier client réel ne doit jamais y
+# être suivi par erreur. _demo.json (gabarit de référence, données
+# fictives) est la seule exception explicitement autorisée.
+data/clients/*.json
+!data/clients/_demo.json

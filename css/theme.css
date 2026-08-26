@@ -1,0 +1,114 @@
+/* Design tokens — palette extraite du logo (assets/logo-transparent.png) */
+:root {
+  --color-ink: #2c2c2b;
+  --color-ink-soft: #55534d;
+  --color-gold: #b89565;
+  --color-gold-soft: #d9c4a3;
+  /* Blanc cassé, jamais blanc pur (charte CLAUDE.md) */
+  --color-paper: #fdfaf5;
+  --color-paper-alt: #f7f5f1;
+  --color-line: #e6e1d8;
+
+  /* Alignées sur --serif / --sans de styles.css (site victorkieny.fr) — voir CLAUDE.md */
+  --font-display: "Bodoni 72 Display", "Bodoni 72", Didot, "Bodoni 72 Smallcaps", Georgia, serif;
+  --font-body: "Avenir Next", Avenir, Helvetica, Arial, sans-serif;
+
+  /* En "cqw" (% de la largeur de .slide__stage, le container query de
+     la scène 16:9) plutôt qu'en vw : le contenu doit se mettre à
+     l'échelle par rapport à la scène, pas au viewport, sinon les
+     proportions cassent dès que la scène est plus petite que l'écran
+     (letterboxing). Uniquement utilisés à l'intérieur de .slide__stage.
+     Échelle unique, réutilisée partout (charte CLAUDE.md) — space-0 pour
+     les micro-écarts, jusqu'à space-4 pour le padding de la scène. */
+  --space-0: clamp(0.25rem, 0.3cqw + 0.15rem, 0.4rem);
+  --space-1: clamp(0.5rem, 0.5cqw + 0.4rem, 0.75rem);
+  --space-2: clamp(0.9rem, 1cqw + 0.6rem, 1.4rem);
+  --space-3: clamp(1.5rem, 2cqw + 1rem, 2.5rem);
+  --space-4: clamp(2.5rem, 4cqw + 1rem, 4.5rem);
+
+  /* Rayon unique pour toutes les cartes ; les boutons/badges utilisent
+     une pilule (999px), jamais une troisième valeur improvisée. */
+  --radius: 14px;
+  /* Bordure fine = dispositif principal ; l'ombre n'est qu'un souffle,
+     pas une ombre marquée (charte CLAUDE.md). */
+  --shadow-card: 0 1px 2px rgba(44, 44, 43, 0.05);
+
+  /* ---------- Système "chapitrage" (handoff design_handoff_slide_patrimoine +
+     slides assurance vie) ----------
+     Palette et polices du système à chapitres numérotés (01 Constat, 02
+     Recommandations, 03 Mise en œuvre — fond encre/papier alterné),
+     partagé par tous les gabarits de ce système (Constat, Assurance vie,
+     futurs PER/SCPI...). Volontairement distinctes des tokens ci-dessus
+     (--color-ink, --font-display...) utilisés par cover/intro, pour ne
+     pas modifier ces slides existantes — voir CLAUDE.md pour la charte à
+     jour de ce système. */
+  --encre: #2b251e;
+  --encre-rgb: 43, 37, 30;
+  --papier: #f2eee6;
+  --papier-rgb: 242, 238, 230;
+  --or: #b99761;
+  --or-clair: #c7ae89;
+  --bleu: #6f8ba7;
+  --bleu-rgb: 111, 139, 167;
+  --bleu-clair: #9eb2c4;
+  --gris-papier: #ded7cc;
+  /* Vert sobre et désaturé, même registre que --bleu (S/L similaires) —
+     "non imposé" sur le schéma de la slide Fiscalité des rachats. Pas un
+     vert "validation" saturé : reste dans la famille de couleurs du
+     système, pas un code couleur d'interface. */
+  --vert: #7a9c83;
+  --vert-rgb: 122, 156, 131;
+  /* Rouge sobre et désaturé, même registre que --vert/--bleu — repère de
+     perte/fiscalité sur le schéma illustratif "Impact fiscal" (ce que la
+     flat tax prélève). Pas un rouge d'alerte saturé. */
+  --rouge: #a86257;
+  --rouge-rgb: 168, 98, 87;
+
+  --font-serif-chapitre: "Bodoni Moda", Didot, Georgia, serif;
+  --font-sans-chapitre: "Avenir Next", Avenir, "Nunito Sans", Helvetica, sans-serif;
+
+  /* Durée/courbe uniques pour toutes les transitions et révélations
+     animées du système "chapitrage" — définies une seule fois ici,
+     réutilisées partout (charte CLAUDE.md, Craft) plutôt qu'une valeur
+     différente par slide. --chap-duration-fade : changements d'état
+     discrets (couleur, opacité — ex. le rail d'étapes). --chap-duration-
+     move / --chap-ease-move : révélations avec mouvement (apparition
+     d'un bloc, remplissage d'une cuve, déploiement d'un schéma) —
+     dépassent le plafond général de 200ms du Craft, en exception
+     assumée et documentée pour ce cas précis (mouvement continu, pas un
+     simple fondu). */
+  --chap-duration-fade: 180ms;
+  --chap-duration-move: 420ms;
+  --chap-ease-move: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-paper-alt);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  line-height: 1.5; /* texte courant : interligne confortable (charte CLAUDE.md) */
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em; /* tracking légèrement négatif (charte CLAUDE.md) */
+  line-height: 1.15; /* interligne serré */
+  margin: 0;
+  color: var(--color-ink);
+}
+
+p { margin: 0; }
+
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+img { max-width: 100%; display: block; }
