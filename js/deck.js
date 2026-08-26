@@ -51,7 +51,13 @@ export const renderers = {
 // injecter ferait apparaître une ligne "client · date" qui n'existait
 // pas.
 export async function loadDeck() {
-  const res = await fetch("data/deck.json");
+  // data/deck.json n'existe que localement (copié depuis data/clients/
+  // au lancement via "Lancer la présentation.command", gitignored —
+  // voir data/clients/.gitignore) : sur le site hébergé (GitHub Pages),
+  // il répond 404, on retombe alors sur data/clients/_demo.json, la
+  // seule fiche client versionnée.
+  let res = await fetch("data/deck.json");
+  if (!res.ok) res = await fetch("data/clients/_demo.json");
   const deck = await res.json();
   const { client, date, chapitres } = deck.meta || {};
   deck.slides.forEach((slide) => {
