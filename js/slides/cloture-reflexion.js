@@ -12,16 +12,22 @@ import { renderChapRail } from "./_chapitre.js";
 // qu'un montant, reste en or même sans être une donnée chiffrée), et
 // la phrase de budget devient elle aussi une
 // question ouverte. Bullets et "à terme" restent inchangés (déjà
-// qualitatifs, aucun chiffre à retirer). Même mécanique de révélation
-// progressive que la variante chiffrée.
+// qualitatifs, aucun chiffre à retirer). Révélation en (3 + N
+// préconisations) états : état 1 = titre + budget ; états 2..N+1 = une
+// préconisation à la fois (nom + puces, questions encore masquées) ;
+// état N+2 = les questions de toutes les préconisations apparaissent
+// ensemble, une fois les N blocs déjà visibles ; état N+3 = "à terme".
 export function render(slide, opts = {}) {
   const preco = slide.preconisations || [];
-  const stateIndex = Math.min(Math.max(opts.stateIndex ?? 0, 0), preco.length + 1);
+  const stateIndex = Math.min(Math.max(opts.stateIndex ?? 0, 0), preco.length + 2);
   const animate = !!opts.animate;
 
   const visibleCount = Math.min(Math.max(stateIndex, 0), preco.length);
-  const showATerme = stateIndex >= preco.length + 1;
-  const aTermeEntering = animate && stateIndex === preco.length + 1;
+  const questionsState = preco.length + 1;
+  const showQuestions = stateIndex >= questionsState;
+  const questionsEntering = animate && stateIndex === questionsState;
+  const showATerme = stateIndex >= preco.length + 2;
+  const aTermeEntering = animate && stateIndex === preco.length + 2;
 
   // Toujours rendues, même avant leur état d'apparition (voir
   // --invisible) : la liste garde sa hauteur pleine dès le premier état,
@@ -51,11 +57,15 @@ export function render(slide, opts = {}) {
       const questions = (p.questions || [])
         .map((q) => `<span class="cloture-d__row-question">${escapeHtml(q)}</span>`)
         .join("");
+      const questionsCls =
+        "cloture-d__row-questions" +
+        (!showQuestions ? " cloture-d__row-questions--invisible" : "") +
+        (questionsEntering ? " is-entering" : "");
       return `
         <div class="cloture-d__row${last ? " cloture-d__row--last" : ""}${visible ? "" : " cloture-d__row--invisible"}${entering ? " is-entering" : ""}"${entering ? " data-reveal" : ""}>
           <div class="cloture-d__row-head">
             <span class="cloture-d__row-nom">${escapeHtml(p.nom)}</span>
-            <div class="cloture-d__row-questions">${questions}</div>
+            <div class="${questionsCls}"${questionsEntering ? " data-reveal" : ""}>${questions}</div>
           </div>
           <div class="cloture-d__bullets">${bullets}</div>
         </div>

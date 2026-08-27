@@ -9,3 +9,11 @@ data/deck.json
 # fictives) est la seule exception explicitement autorisée.
 data/clients/*.json
 !data/clients/_demo.json
+
+# PDF exportés (scripts/export_pdf.py) : contiennent les préconisations
+# réelles d'un client — même garde-fou que data/clients/*.json.
+PDF/
+
+# Environnement Python local (Playwright/Pillow pour scripts/screenshot.py
+# et scripts/export_pdf.py) — jamais versionné, propre à chaque machine.
+.venv/

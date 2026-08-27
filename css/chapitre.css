@@ -3049,7 +3049,7 @@
 
 .cloture__title {
   margin: 0;
-  font-size: max(1.9rem, 4.0625cqw);
+  font-size: max(1.5rem, 3.25cqw);
   color: rgb(var(--chap-ink-rgb));
 }
 
@@ -3128,7 +3128,7 @@
 .cloture-d__row-nom {
   font-family: var(--font-serif-chapitre);
   font-weight: 400;
-  font-size: 1.5625cqw;
+  font-size: 1.875cqw;
   line-height: 1;
   white-space: nowrap;
   color: rgb(var(--chap-ink-rgb));
@@ -3138,7 +3138,7 @@
   flex: none;
   font-family: var(--font-serif-chapitre);
   font-weight: 400;
-  font-size: 1.5625cqw;
+  font-size: 1.875cqw;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -3161,9 +3161,18 @@
   gap: 0.9375cqw;
 }
 
+/* Révélées au clic, une fois les blocs déjà apparus (voir
+   cloture-reflexion.js) — même principe que .cloture-d__row--invisible :
+   toujours dans le flux dès le premier état, seule l'opacité change,
+   pour ne pas redéplacer le reste de la ligne (nom, puces) quand les
+   questions apparaissent. */
+.cloture-d__row-questions--invisible {
+  opacity: 0;
+}
+
 .cloture-d__row-question {
   font-weight: 600;
-  font-size: 1.171875cqw;
+  font-size: 1.40625cqw;
   line-height: 1.2;
   white-space: nowrap;
   color: var(--or);
@@ -3192,7 +3201,7 @@
 
 .cloture-d__bullet-text {
   font-weight: 450;
-  font-size: 1.015625cqw;
+  font-size: 1.21875cqw;
   line-height: 1.4;
   color: rgba(var(--chap-ink-rgb), 0.75);
 }
@@ -3210,9 +3219,11 @@
   padding-top: 1.09375cqw;
   border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.18);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.390625cqw;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.390625cqw 0.78125cqw;
   text-align: center;
 }
 
@@ -3221,19 +3232,21 @@
 }
 
 .cloture__aterme-label {
+  flex: none;
   font-weight: 700;
-  font-size: 0.78125cqw;
+  font-size: 1.09375cqw;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(var(--chap-ink-rgb), 0.45);
+  color: rgba(var(--chap-ink-rgb), 0.6);
+  white-space: nowrap;
 }
 
 .cloture__aterme-text {
   margin: 0;
-  max-width: 50cqw;
+  max-width: 70cqw;
   font-family: var(--font-sans-chapitre);
   font-weight: 450;
-  font-size: 0.9375cqw;
+  font-size: 1.328125cqw;
   line-height: 1.4;
-  color: rgba(var(--chap-ink-rgb), 0.55);
+  color: rgba(var(--chap-ink-rgb), 0.8);
 }

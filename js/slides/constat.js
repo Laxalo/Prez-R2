@@ -6,7 +6,7 @@ import { formatPct, renderChapRail } from "./_chapitre.js";
 // viennent de deck.json ("contenus fictifs en attente des vrais
 // chiffres", cf. README du handoff), rien n'est codé en dur ici.
 
-const SUPPORT_PALETTE = ["var(--or)", "var(--or-clair)", "var(--bleu)", "var(--bleu-clair)", "var(--gris-papier)"];
+const SUPPORT_PALETTE = ["var(--or)", "var(--or-clair)", "var(--bleu)", "var(--bleu-clair)", "var(--vert)", "var(--gris-papier)"];
 
 const KPI_ACCENT = { or: "var(--or-clair)", bleu: "var(--bleu-clair)" };
 

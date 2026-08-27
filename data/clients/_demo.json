@@ -470,6 +470,13 @@
       ]
     },
     {
+      "id": "av-simulation",
+      "type": "section-title",
+      "chapitreActif": 2,
+      "titre": "Assurance vie",
+      "sousTitre": "Plan d'investissement"
+    },
+    {
       "id": "av-synthese",
       "type": "chap-regles",
       "chapitreActif": 2,
@@ -598,6 +605,13 @@
         {},
         {}
       ]
+    },
+    {
+      "id": "scpi-simulation",
+      "type": "section-title",
+      "chapitreActif": 2,
+      "titre": "SCPI",
+      "sousTitre": "Plan d'investissement"
     },
     {
       "id": "scpi-financement",
@@ -853,6 +867,7 @@
         "texte": "Optimisation de votre fiscalité, aux côtés d'une épargne de précaution préservée."
       },
       "states": [
+        {},
         {},
         {},
         {},
