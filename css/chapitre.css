@@ -44,6 +44,7 @@
 .slide__stage.slide--atouts,
 .slide__stage.slide--scpi-financement,
 .slide__stage.slide--per-simulation,
+.slide__stage.slide--per-exemples,
 .slide__stage.slide--formule {
   background: var(--papier);
   --chap-ink-rgb: var(--encre-rgb);
@@ -64,6 +65,7 @@
 .slide--atouts .slide__content,
 .slide--scpi-financement .slide__content,
 .slide--per-simulation .slide__content,
+.slide--per-exemples .slide__content,
 .slide--formule .slide__content {
   padding: 0;
   color: rgb(var(--chap-ink-rgb));
@@ -3220,6 +3222,254 @@
   color: rgba(var(--chap-ink-rgb), 0.45);
 }
 
+/* ---------- Gabarit "Exemples chiffrés" (chapitre PER) ----------
+   Deux tableaux de données fournies par le simulateur (voir
+   per-exemples.js) — même vocabulaire de carte que .scpi-cadence__box /
+   .per-simulation__bar-wrap (bordure fine rgba(chap-ink-rgb,.22), pas
+   d'ombre), assemblées en grille pour former une ligne de colonnes par
+   tableau plutôt qu'un <table> HTML brut. */
+
+.per-exemples {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.per-exemples__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.per-exemples__title {
+  font-size: max(1.5rem, 2.65625cqw);
+}
+
+.per-exemples__stage {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.09375cqw;
+}
+
+/* Bloc par défaut (une colonne : le tableau, puis ses notes basses
+   éventuelles) — voir .per-exemples__table-wrap--row ci-dessous pour la
+   variante avec une note à droite du tableau, dans l'espace laissé
+   libre par un tableau plus étroit que maxCols. */
+.per-exemples__table-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.703125cqw;
+}
+
+/* Variante rangée (col.noteDroite) : le tableau et sa note occupent
+   ensemble toute la largeur de la scène (100%, comme le tableau le plus
+   large de la slide) — la note prend exactement l'espace qu'un tableau
+   plus étroit que maxCols laisse vide à sa droite, plutôt que de le
+   laisser inutilisé. */
+.per-exemples__table-wrap--row {
+  display: flex;
+  align-items: stretch;
+}
+
+.per-exemples__table-aside {
+  box-sizing: border-box;
+  padding-left: 1.5625cqw;
+  display: flex;
+  align-items: center;
+}
+
+.per-exemples__table {
+  width: 100%;
+  display: grid;
+  border: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+  border-radius: 0.234375cqw;
+  overflow: hidden;
+}
+
+/* Tableau pas encore complet (voir tableauHtml, `complete`) : le
+   contour reste transparent tant que toutes ses cases ne sont pas
+   révélées — sinon il dessinerait d'avance la forme entière du tableau,
+   trahissant son nombre de cases avant qu'elles n'apparaissent une à
+   une. Les séparateurs internes (border-left de chaque case, voir
+   .per-exemples__col) restent inchangés : eux suivent déjà la
+   révélation case par case. */
+.per-exemples__table--building {
+  border-color: transparent;
+}
+
+.per-exemples__col {
+  box-sizing: border-box;
+  padding: 1.40625cqw 1.5625cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.859375cqw;
+  border-left: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+  transition: opacity var(--chap-duration-fade) linear;
+}
+
+.per-exemples__col:first-child {
+  border-left: none;
+}
+
+/* Case pas encore révélée : reste dans le flux (largeur de colonne
+   inchangée, voir tableauHtml en JS), juste invisible — même principe
+   que .scpi-cadence__box--empty / .formule__operande--invisible. */
+.per-exemples__col--invisible {
+  opacity: 0;
+}
+
+.per-exemples__col--shade {
+  background: rgba(var(--chap-ink-rgb), 0.05);
+}
+
+/* Contour doré (résultat mis en avant, ex. "Gain fiscal") : box-shadow
+   inset plutôt que border sur les 4 côtés — reste dans les limites de
+   la cellule (n'affecte pas la largeur des colonnes voisines, calées en
+   grid) et respecte l'arrondi du tableau grâce à overflow:hidden sur
+   .per-exemples__table. border-left en dur (pas box-shadow) car c'est
+   la frontière déjà tracée par .per-exemples__col : on la recolore
+   plutôt que d'en superposer une deuxième. */
+.per-exemples__col--gold {
+  border-left-color: var(--or);
+  box-shadow: inset 0 0.078125cqw 0 0 var(--or), inset 0 -0.078125cqw 0 0 var(--or), inset -0.078125cqw 0 0 0 var(--or);
+}
+
+/* Contour bleu épaissi (colonne mutualisable, ex. "Versement N" — voir
+   col.encadreBleu) : un trait plus épais que la bordure standard
+   (0.15625cqw, le double), pour se distinguer d'un simple accent de
+   couleur — ce contour signale une action possible sur cette case, pas
+   juste un résultat à lire. outline plutôt que box-shadow inset/border
+   (technique de --gold, qui ne fonctionne que parce que son épaisseur
+   est identique à la bordure standard) : un outline n'est pas contraint
+   à l'intérieur de la case — outline-offset négatif le centre sur la
+   frontière réelle de la case (moitié dedans, moitié dans la case
+   voisine ou le cadre du tableau), et sa position dans l'ordre de
+   peinture (z-index, plus haut que les cases voisines en flux normal)
+   le fait recouvrir proprement les traits existants plutôt que de
+   s'additionner à côté d'eux avec un décalage visible. */
+.per-exemples__col--encadre {
+  position: relative;
+  z-index: 1;
+  outline: 0.15625cqw solid var(--bleu);
+  outline-offset: -0.078125cqw;
+}
+
+/* Note bleue sous le tableau concerné (col.noteBas), même état que le
+   contour ci-dessus — pas une case de tableau de plus, une légende qui
+   commente la case encadrée. */
+.per-exemples__note-bas {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.8203125cqw;
+  line-height: 1.35;
+  color: var(--bleu);
+  transition: opacity var(--chap-duration-fade) linear;
+}
+
+.per-exemples__note-bas--invisible {
+  opacity: 0;
+}
+
+/* Note bleue à droite du tableau concerné (col.noteDroite), dans
+   l'espace laissé libre par un tableau plus étroit que maxCols — même
+   registre que .per-exemples__note-bas (poids, taille, couleur), pas de
+   centrage de texte : elle se lit comme une légende accrochée à la
+   colonne encadrée, pas comme un titre. */
+.per-exemples__note-droite {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.8203125cqw;
+  line-height: 1.35;
+  color: var(--bleu);
+  transition: opacity var(--chap-duration-fade) linear;
+}
+
+.per-exemples__note-droite--invisible {
+  opacity: 0;
+}
+
+.per-exemples__col-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125cqw;
+  min-height: 2.8cqw;
+}
+
+.per-exemples__col-label {
+  font-weight: 700;
+  font-size: 0.8203125cqw;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+.per-exemples__col-note {
+  font-weight: 450;
+  font-size: 0.6875cqw;
+  line-height: 1.3;
+  color: rgba(var(--chap-ink-rgb), 0.42);
+}
+
+.per-exemples__col-valeur {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.640625cqw;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+/* Conclusion chiffrée sous les tableaux (slide.resultat, dernier état
+   de la révélation) — même vocabulaire que .per-simulation__capital-
+   value (serif, or, gros corps) : c'est le résultat final de la slide,
+   pas une case de tableau de plus. */
+.per-exemples__resultat {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.78125cqw;
+  transition: opacity var(--chap-duration-fade) linear;
+}
+
+.per-exemples__resultat--invisible {
+  opacity: 0;
+}
+
+.per-exemples__resultat-label {
+  font-weight: 700;
+  font-size: 0.9375cqw;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+.per-exemples__resultat-valeur {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.875cqw;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--or);
+}
+
+.per-exemples__footnote {
+  flex: none;
+  margin: 0;
+  padding-top: 0.9375cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.16);
+  font-weight: 450;
+  font-size: 0.78125cqw;
+  line-height: 1.5;
+  color: rgba(var(--chap-ink-rgb), 0.45);
+}
+
 /* ---------- Gabarit "Clôture" (dernière slide du RDV, fond encre à la
    manière de "Constat") — récap des préconisations retenues, en liste
    empilée avec puces (.cloture-d__*), sous un habillage partagé
@@ -3620,6 +3870,15 @@
   align-items: center;
   gap: 0.546875cqw;
   width: 15.625cqw;
+  transition: opacity var(--chap-duration-fade) linear;
+}
+
+/* Largeur fixe conservée (width posé ci-dessus) : un opérande pas
+   encore révélé reste dans le flux, juste invisible — le cadre ne se
+   redimensionne jamais pendant la révélation élément par élément (voir
+   formule.js). */
+.formule__operande--invisible {
+  opacity: 0;
 }
 
 .formule__operande .chap-icon {
@@ -3628,7 +3887,7 @@
 
 .formule__operande-label {
   font-weight: 450;
-  font-size: 1.09375cqw;
+  font-size: 1.328125cqw;
   line-height: 1.35;
   text-align: center;
   color: rgba(var(--chap-ink-rgb), 0.85);
@@ -3655,7 +3914,7 @@
 
 .formule__operande-note {
   font-weight: 450;
-  font-size: 1.09375cqw;
+  font-size: 1.25cqw;
   color: rgba(var(--chap-ink-rgb), 0.6);
 }
 
@@ -3663,5 +3922,10 @@
   flex: none;
   font-family: var(--font-serif-chapitre);
   font-size: 2.1875cqw;
-  color: rgba(var(--chap-ink-rgb), 0.35);
+  color: rgb(var(--chap-ink-rgb));
+  transition: opacity var(--chap-duration-fade) linear;
+}
+
+.formule__operator--invisible {
+  opacity: 0;
 }

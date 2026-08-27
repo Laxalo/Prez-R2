@@ -12,6 +12,7 @@ import * as scpiCadence from "./slides/scpi-cadence.js";
 import * as atouts from "./slides/atouts.js";
 import * as scpiFinancement from "./slides/scpi-financement.js";
 import * as perSimulation from "./slides/per-simulation.js";
+import * as perExemples from "./slides/per-exemples.js";
 import * as formule from "./slides/formule.js";
 import * as clotureReflexion from "./slides/cloture-reflexion.js";
 import * as clotureDetail from "./slides/cloture-detail.js";
@@ -37,6 +38,7 @@ export const renderers = {
   atouts: { render: atouts.render },
   "scpi-financement": { render: scpiFinancement.render },
   "per-simulation": { render: perSimulation.render },
+  "per-exemples": { render: perExemples.render },
   formule: { render: formule.render },
   "cloture-reflexion": { render: clotureReflexion.render },
   "cloture-detail": { render: clotureDetail.render },

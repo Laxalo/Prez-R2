@@ -712,8 +712,156 @@
       "states": [
         {},
         {},
+        {},
+        {},
+        {},
+        {},
         {}
       ]
+    },
+    {
+      "id": "per-mecanisme-tmi45",
+      "type": "formule",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "kicker": "Comment ça marche ?",
+      "titre": "Une économie d'impôt offerte à chaque versement",
+      "titreHalo": "économie d'impôt",
+      "principe": {
+        "a": "Montant de votre versement",
+        "b": "Votre TMI",
+        "resultat": "Votre économie d'impôt"
+      },
+      "exemple": {
+        "icon": "capital",
+        "aValeur": "300 €/mois",
+        "aNote": "3 600 € par an",
+        "bValeur": "TMI à 45 %",
+        "resultatValeur": "123 €/mois",
+        "resultatNote": "1 476 € par an"
+      },
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-simulation",
+      "type": "per-simulation",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 1,
+      "titre": "Le plan d'investissement",
+      "sousTitre": "Constitution de votre capital retraite",
+      "versementMensuel": 300,
+      "tmiPct": 30,
+      "dureeAnnees": 20,
+      "rendementAnnuelPct": 3.2,
+      "rendementTotal": 28000,
+      "states": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-exemples",
+      "type": "per-exemples",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "titre": "Exemples chiffrés",
+      "tableaux": [
+        {
+          "colonnes": [
+            {
+              "label": "Versement 2027",
+              "valeur": "0 €",
+              "accent": "or"
+            },
+            {
+              "label": "Revenu Imposable Estimé",
+              "valeur": "200 000 €"
+            },
+            {
+              "label": "Impôt estimé",
+              "valeur": "66 523 €",
+              "shade": true,
+              "encadreBleu": true,
+              "noteDroite": "Diminuable grâce au PACS, via le passage à 2 parts fiscales",
+              "encadreOrdre": 2
+            }
+          ]
+        },
+        {
+          "colonnes": [
+            {
+              "label": "Versement 2027",
+              "note": "10% revenus 2026 + rattrapage plafond 2025",
+              "valeur": "24 710 €",
+              "accent": "or",
+              "encadreBleu": true,
+              "noteBas": "Augmentable grâce au PACS, via la mutualisation des plafonds",
+              "encadreOrdre": 1
+            },
+            {
+              "label": "Revenu Net fiscal Estimé",
+              "valeur": "175 290 €"
+            },
+            {
+              "label": "Impôt estimé",
+              "valeur": "55 669 €",
+              "accent": "bleu",
+              "shade": true
+            },
+            {
+              "label": "Gain Fiscal",
+              "valeur": "10 854 €",
+              "accent": "vert",
+              "gold": true
+            }
+          ]
+        }
+      ],
+      "notePied": "Illustration non contractuelle, à partir de données fournies par le simulateur.",
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "resultat": {
+        "label": "Rentabilité instantanée",
+        "valeur": "+45 %"
+      }
     },
     {
       "id": "per-plafond",
@@ -754,21 +902,9 @@
             "Un conjoint ou partenaire de Pacs peut utiliser le plafond disponible de l'autre",
             "Une optimisation à l'échelle du foyer fiscal"
           ]
-        },
-        {
-          "numero": "04",
-          "icon": "cle",
-          "label": "Le bonus résidence principale",
-          "bullets": [
-            "Déblocage anticipé possible pour financer l'achat de la résidence principale",
-            "L'un des cas de sortie anticipée prévus par la loi, aux côtés des accidents de la vie"
-          ]
         }
       ],
       "states": [
-        {},
-        {},
-        {},
         {},
         {},
         {},
@@ -821,37 +957,12 @@
       ]
     },
     {
-      "id": "per-simulation",
-      "type": "per-simulation",
-      "chapitreActif": 2,
-      "railEtapes": [
-        "Retraite",
-        "Impôts",
-        "Prévoyance",
-        "Transmission"
-      ],
-      "railActive": 1,
-      "titre": "Le plan d'investissement",
-      "sousTitre": "Constitution de votre capital retraite",
-      "versementMensuel": 300,
-      "tmiPct": 30,
-      "dureeAnnees": 20,
-      "rendementAnnuelPct": 3.2,
-      "rendementTotal": 28000,
-      "states": [
-        {},
-        {},
-        {},
-        {}
-      ]
-    },
-    {
       "id": "per-synthese",
       "type": "chap-regles",
       "chapitreActif": 2,
       "kicker": "En synthèse",
       "titre": "Le plan d'épargne retraite",
-      "picto": "formes",
+      "picto": "as-de-coeur",
       "lead": "Un placement qui combine retraite, fiscalité, prévoyance et transmission.",
       "regles": [
         {
