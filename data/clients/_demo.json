@@ -681,31 +681,6 @@
       ]
     },
     {
-      "id": "per-simulation",
-      "type": "per-simulation",
-      "chapitreActif": 2,
-      "railEtapes": [
-        "Retraite",
-        "Impôts",
-        "Prévoyance",
-        "Transmission"
-      ],
-      "railActive": 1,
-      "titre": "Le plan d'investissement",
-      "sousTitre": "Constitution de votre capital retraite",
-      "versementMensuel": 300,
-      "tmiPct": 30,
-      "dureeAnnees": 20,
-      "rendementAnnuelPct": 3.2,
-      "rendementTotal": 28000,
-      "states": [
-        {},
-        {},
-        {},
-        {}
-      ]
-    },
-    {
       "id": "per-plafond",
       "type": "atouts",
       "chapitreActif": 2,
@@ -802,6 +777,31 @@
           "Exonération totale des plus-values"
         ]
       },
+      "states": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-simulation",
+      "type": "per-simulation",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 1,
+      "titre": "Le plan d'investissement",
+      "sousTitre": "Constitution de votre capital retraite",
+      "versementMensuel": 300,
+      "tmiPct": 30,
+      "dureeAnnees": 20,
+      "rendementAnnuelPct": 3.2,
+      "rendementTotal": 28000,
       "states": [
         {},
         {},
