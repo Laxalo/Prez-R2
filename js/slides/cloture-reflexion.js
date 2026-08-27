@@ -1,5 +1,5 @@
 import { escapeHtml } from "../editable.js";
-import { renderChapRail } from "./_chapitre.js";
+import { renderChapRail, renderATerme } from "./_chapitre.js";
 
 // Gabarit "Clôture — réflexion" : duplicata de "Clôture" (cloture-detail.js,
 // voir son en-tête) — même habillage, même registre empilé, mais
@@ -87,9 +87,9 @@ export function render(slide, opts = {}) {
         ${rows}
       </div>
 
-      <div class="cloture__aterme${!showATerme ? " cloture__aterme--invisible" : ""}${aTermeEntering ? " is-entering" : ""}"${aTermeEntering ? " data-reveal" : ""}>
+      <div class="cloture__aterme${slide.aTerme.bullets && slide.aTerme.bullets.length ? " cloture__aterme--list" : ""}${!showATerme ? " cloture__aterme--invisible" : ""}${aTermeEntering ? " is-entering" : ""}"${aTermeEntering ? " data-reveal" : ""}>
         <span class="cloture__aterme-label">${escapeHtml(slide.aTerme.label)}</span>
-        <p class="cloture__aterme-text">${escapeHtml(slide.aTerme.texte)}</p>
+        ${renderATerme(slide.aTerme)}
       </div>
     </div>
   `;

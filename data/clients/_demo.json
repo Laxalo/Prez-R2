@@ -34,19 +34,16 @@
         {
           "label": "Épargne de précaution souhaitée",
           "valeur": "21 600 €",
-          "note": "objectif recommandé",
           "accent": "or"
         },
         {
           "label": "Épargne de précaution réelle",
           "valeur": "14 700 €",
-          "note": "68 % de l'objectif atteint",
           "accent": "bleu"
         },
         {
           "label": "Effort d'épargne mensuel",
           "valeur": "1 450 €",
-          "note": "22 % des revenus nets",
           "accent": "or"
         }
       ],
@@ -64,7 +61,7 @@
         {
           "nom": "Assurance-vie",
           "montant": 86500,
-          "horizon": "8 ans +"
+          "horizon": "disponible"
         },
         {
           "nom": "SCPI",
@@ -651,8 +648,8 @@
       "kicker": "Pourquoi le PER ?",
       "titre": "Une solution retraite aux multiples atouts",
       "titreHalo": "atouts",
-      "picto": "formes",
-      "lead": "Un placement qui combine retraite, fiscalité, prévoyance et transmission.",
+      "picto": "as-de-coeur",
+      "lead": "",
       "regles": [
         {
           "numero": "1",
@@ -669,12 +666,50 @@
         {
           "numero": "4",
           "label": "Transmission"
+        },
+        {
+          "numero": "5",
+          "label": "Résidence principale"
         }
       ],
       "states": [
         {},
         {},
         {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-mecanisme",
+      "type": "formule",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "kicker": "Comment ça marche ?",
+      "titre": "Une économie d'impôt offerte à chaque versement",
+      "titreHalo": "économie d'impôt",
+      "principe": {
+        "a": "Montant de votre versement",
+        "b": "Votre TMI",
+        "resultat": "Votre économie d'impôt"
+      },
+      "exemple": {
+        "icon": "capital",
+        "aValeur": "300 €/mois",
+        "aNote": "3 600 € par an",
+        "bValeur": "TMI à 30 %",
+        "resultatValeur": "90 €/mois",
+        "resultatNote": "1 080 € par an"
+      },
+      "states": [
         {},
         {},
         {}
@@ -691,16 +726,16 @@
         "Transmission"
       ],
       "railActive": 2,
-      "titre": "Le plafond de déduction",
+      "titre": "En pratique, le plafond de déduction TNS",
       "atouts": [
         {
           "numero": "01",
           "icon": "plafond",
-          "label": "Le plafond annuel",
+          "label": "Le plafond annuel pour 2027",
           "bullets": [
-            "10 % des revenus professionnels de l'année précédente",
-            "Plancher de 4 710 € même en l'absence de revenus suffisants (10 % du PASS 2025)",
-            "Plafonné à 37 680 € (8 fois le plancher)"
+            "Montant déductible : 10 % des bénéfices 2026 + 15% de la part comprise entre 1 et 8 PASS (48 060€)",
+            "Minimum : 4 806 €, même en l'absence de revenus suffisants (10 % du PASS 2026)",
+            "Maximum : plafonné à 88 911 € (10% de 8 PASS 2026 + 15% de 7 PASS 2026)"
           ]
         },
         {
@@ -708,8 +743,7 @@
           "icon": "cycle",
           "label": "Le rattrapage",
           "bullets": [
-            "Les plafonds non utilisés se cumulent sur les 5 dernières années (plafonds constitués à partir de 2026)",
-            "Une capacité de déduction qui peut dépasser 37 680 € sur une seule année"
+            "Les plafonds non utilisés se cumulent sur les 5 dernières années"
           ]
         },
         {
@@ -740,6 +774,9 @@
         {},
         {},
         {},
+        {},
+        {},
+        {},
         {}
       ]
     },
@@ -755,13 +792,13 @@
       ],
       "railActive": 4,
       "titre": "Le PER pour protéger ses proches",
-      "sousTitre": "Le même régime de transmission qu'une assurance vie, pour un PER assurantiel",
+      "sousTitre": "",
       "clause": {
         "label": "Clause bénéficiaire",
         "texte": "Un ou plusieurs bénéficiaires, libre choix des montants"
       },
       "donation": {
-        "label": "Versements avant 70 ans",
+        "label": "Décès avant 70 ans",
         "montant": 152500,
         "note": "d'abattement par bénéficiaire, exonéré de droits de succession",
         "beneficiaires": [
@@ -771,10 +808,9 @@
         ]
       },
       "apres70": {
-        "label": "Versements après 70 ans",
+        "label": "Décès après 70 ans",
         "bullets": [
-          "Abattement global de 30 500 € sur le capital versé",
-          "Exonération totale des plus-values"
+          "Abattement global de 30 500 € commun pour tous les bénéficiaires"
         ]
       },
       "states": [

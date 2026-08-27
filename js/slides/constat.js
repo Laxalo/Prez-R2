@@ -43,7 +43,6 @@ function kpiHtml(kpi, { visible, entering }) {
     <div class="${cls}"${entering ? " data-reveal" : ""}>
       <span class="constat__kpi-label" style="color:${color}">${escapeHtml(kpi.label)}</span>
       <span class="constat__kpi-value">${escapeHtml(kpi.valeur)}</span>
-      <span class="constat__kpi-note">${escapeHtml(kpi.note)}</span>
     </div>
   `;
 }

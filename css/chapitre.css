@@ -43,7 +43,8 @@
 .slide__stage.slide--scpi-cadence,
 .slide__stage.slide--atouts,
 .slide__stage.slide--scpi-financement,
-.slide__stage.slide--per-simulation {
+.slide__stage.slide--per-simulation,
+.slide__stage.slide--formule {
   background: var(--papier);
   --chap-ink-rgb: var(--encre-rgb);
 }
@@ -62,7 +63,8 @@
 .slide--scpi-cadence .slide__content,
 .slide--atouts .slide__content,
 .slide--scpi-financement .slide__content,
-.slide--per-simulation .slide__content {
+.slide--per-simulation .slide__content,
+.slide--formule .slide__content {
   padding: 0;
   color: rgb(var(--chap-ink-rgb));
 }
@@ -585,7 +587,7 @@
 
 .chap-regles__title {
   margin-top: 1.71875cqw;
-  font-size: max(2.4rem, 4.84375cqw);
+  font-size: max(1.7rem, 3.125cqw);
 }
 
 .chap-regles__lead {
@@ -658,6 +660,15 @@
 .chap-regles__picto .chap-icon {
   width: 7.5cqw;
   height: 7.5cqw;
+}
+
+/* Les pictogrammes fournis en image (voir IMAGE_ICONS dans
+   _chapitre.js) sont dessinés avec plus de vide autour du motif qu'un
+   pictogramme trait 24×24 — x2 par rapport au reste pour rester aussi
+   lisibles une fois affichés. */
+.chap-regles__picto .chap-icon--img {
+  width: 15cqw;
+  height: 15cqw;
 }
 
 .chap-regles__picto--invisible {
@@ -928,6 +939,10 @@
 .chap-icon {
   flex: none;
   display: block;
+}
+
+.chap-icon--img {
+  object-fit: contain;
 }
 
 .deux-poches__item-text {
@@ -3428,4 +3443,225 @@
   font-size: 1.328125cqw;
   line-height: 1.4;
   color: rgba(var(--chap-ink-rgb), 0.8);
+}
+
+/* Variante liste à puces (deux niveaux) de "à terme" — quand une seule
+   phrase (.cloture__aterme-text ci-dessus) ne suffit pas à résumer
+   plusieurs pistes distinctes (voir aTerme.bullets, renderATerme() dans
+   _chapitre.js). Bascule le bloc en colonne alignée à gauche : le mode
+   phrase reste centré sur une ligne, celui-ci a besoin de hauteur et
+   d'une lecture verticale. */
+.cloture__aterme--list {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.cloture__aterme-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28cqw;
+}
+
+.cloture__aterme-item {
+  font-family: var(--font-sans-chapitre);
+  font-weight: 450;
+  font-size: 1.21875cqw;
+  line-height: 1.4;
+  color: rgba(var(--chap-ink-rgb), 0.8);
+}
+
+.cloture__aterme-item-text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5cqw;
+  font-family: var(--font-sans-chapitre);
+  font-weight: 450;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+.cloture__aterme-item-text::before {
+  content: "";
+  flex: none;
+  width: 0.7cqw;
+  height: 0.0625cqw;
+  background: var(--or);
+  transform: translateY(-0.3cqw);
+}
+
+.cloture__aterme-sublist {
+  margin: 0.15625cqw 0 0 1.625cqw;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15625cqw;
+}
+
+.cloture__aterme-subitem {
+  font-size: 1.21875cqw;
+  line-height: 1.4;
+  color: rgba(var(--chap-ink-rgb), 0.65);
+}
+
+.cloture__aterme-subitem::before {
+  content: "– ";
+  color: rgba(var(--chap-ink-rgb), 0.4);
+}
+
+/* ---------- Gabarit "Formule" (voir js/slides/formule.js) ----------
+   Un principe (opérandes sans valeurs) puis le même schéma chiffré en
+   exemple, reliés par × et = — jamais d'encadré ni de pointillés (pas
+   un pattern de ce deck) : la hiérarchie vient de la typographie et de
+   l'espace, comme le reste des gabarits. */
+
+.formule {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.formule__intro {
+  padding-top: 1.5625cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.formule__kicker {
+  font-weight: 700;
+  font-size: 1.23046875cqw;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.5);
+}
+
+.formule__rule {
+  margin-top: 1.5625cqw;
+  width: 5.46875cqw;
+  height: 0.15625cqw;
+  background: var(--or);
+  display: block;
+}
+
+.formule__title {
+  margin-top: 1.71875cqw;
+  font-size: max(1.7rem, 2.65625cqw);
+}
+
+.formule__halo {
+  color: var(--or);
+}
+
+/* Occupe l'espace entre l'intro et la conclusion, et centre le principe
+   + l'exemple dedans (même logique que .transmission__body) : la
+   hauteur pleine est réservée dès l'état 1, rien ne se déplace quand
+   les deux sections apparaissent. */
+.formule__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3.4375cqw;
+}
+
+.formule__section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.09375cqw;
+}
+
+.formule__section--invisible {
+  opacity: 0;
+}
+
+/* Encadré : seul endroit du deck à utiliser une bordure/un cadre — la
+   formule (principe puis exemple) est le contenu le plus proche d'un
+   "calcul" affiché, un cadre aide à le lire comme un bloc autonome,
+   contrairement au reste du deck (séparateurs fins, jamais de boîte). */
+.formule__frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.09375cqw;
+  padding: 1.875cqw 3.125cqw;
+  border: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+  border-radius: 0.9375cqw;
+}
+
+.formule__exemple-kicker {
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}
+
+.formule__row {
+  display: flex;
+  align-items: center;
+  gap: 1.875cqw;
+}
+
+.formule__operande {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.546875cqw;
+  width: 15.625cqw;
+}
+
+.formule__operande .chap-icon {
+  margin-bottom: 0.15625cqw;
+}
+
+.formule__operande-label {
+  font-weight: 450;
+  font-size: 1.09375cqw;
+  line-height: 1.35;
+  text-align: center;
+  color: rgba(var(--chap-ink-rgb), 0.85);
+}
+
+.formule__operande--resultat .formule__operande-label {
+  font-weight: 700;
+  color: var(--or);
+}
+
+.formule__operande-valeur {
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 1.640625cqw;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.formule__operande--resultat .formule__operande-valeur {
+  font-weight: 700;
+  color: var(--or);
+}
+
+.formule__operande-note {
+  font-weight: 450;
+  font-size: 1.09375cqw;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+.formule__operator {
+  flex: none;
+  font-family: var(--font-serif-chapitre);
+  font-size: 2.1875cqw;
+  color: rgba(var(--chap-ink-rgb), 0.35);
 }

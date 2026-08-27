@@ -167,7 +167,48 @@ export const ICONS = {
   "economie-impot": '<path d="M12 4V14M12 14L8 10M12 14L16 10"/><path d="M5 19H19"/>',
 };
 
+// Bloc "À terme" (dernière ligne des slides cloture-reflexion.js /
+// cloture-detail.js) : soit une phrase simple (aTerme.texte, cas
+// courant — voir _demo.json), soit une liste à puces sur deux niveaux
+// (aTerme.bullets, ex. plusieurs pistes distinctes avec leurs propres
+// ingénieries) quand une seule phrase ne suffit plus à résumer toutes
+// les pistes retenues pour plus tard. Rendu partagé : les deux slides
+// affichent le même bloc.
+export function renderATerme(aTerme) {
+  if (!aTerme) return "";
+  if (aTerme.bullets && aTerme.bullets.length) {
+    const items = aTerme.bullets
+      .map((b) => {
+        const sous = (b.sousBullets || [])
+          .map((s) => `<li class="cloture__aterme-subitem">${escapeHtml(s)}</li>`)
+          .join("");
+        return `
+          <li class="cloture__aterme-item">
+            <span class="cloture__aterme-item-text">${escapeHtml(b.texte)}</span>
+            ${sous ? `<ul class="cloture__aterme-sublist">${sous}</ul>` : ""}
+          </li>
+        `;
+      })
+      .join("");
+    return `<ul class="cloture__aterme-list">${items}</ul>`;
+  }
+  return `<p class="cloture__aterme-text">${escapeHtml(aTerme.texte)}</p>`;
+}
+
+// Pictogrammes fournis en image (pas dessinés sur la grille 24×24
+// partagée ci-dessus) — un fichier par nom, dans assets/icons/. Rendu en
+// <img>, mais avec la même classe "chap-icon" que les SVG : la taille
+// reste pilotée par le CSS du gabarit qui l'affiche (ex.
+// .chap-regles__picto .chap-icon), pas par les attributs width/height.
+const IMAGE_ICONS = {
+  "as-de-coeur": "assets/icons/as-de-coeur-option3-cascade-dore.png",
+};
+
 export function iconSvg(name, color, size = 38) {
+  const imgSrc = IMAGE_ICONS[name];
+  if (imgSrc) {
+    return `<img src="${imgSrc}" alt="" width="${size}" height="${size}" class="chap-icon chap-icon--img">`;
+  }
   const path = ICONS[name];
   if (!path) return "";
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" stroke="${color}" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:${color}" class="chap-icon">${path}</svg>`;

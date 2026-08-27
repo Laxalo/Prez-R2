@@ -82,13 +82,6 @@ function currentSlide() {
   return deck.slides[currentIndex];
 }
 
-function nextVisibleSlide() {
-  for (let i = currentIndex + 1; i < deck.slides.length; i++) {
-    if (!hidden.has(deck.slides[i].id)) return deck.slides[i];
-  }
-  return null;
-}
-
 function broadcastCurrent(animate = false) {
   const slide = currentSlide();
   // Une slide masquée reste modifiable par le présentateur mais n'est
@@ -121,15 +114,18 @@ function renderCurrent(animate = false) {
 }
 
 function renderNext() {
-  const slide = nextVisibleSlide();
+  // Ce que le PROCHAIN clic affichera — même calcul que goNext()
+  // (stepForward), pas juste "la slide suivante" : si la slide courante a
+  // encore des états à dérouler, c'est son état suivant qui apparaît au
+  // prochain clic, pas la slide d'après. On ne bascule sur le premier
+  // état de la slide suivante qu'une fois le dernier état courant atteint.
+  const next = stepForward(deck.slides, hidden, { slideIndex: currentIndex, stateIndex });
   // .presenter-preview (voir presenter.css) adapte .slide__stage à la
   // largeur ET à la hauteur réellement disponibles (container query
   // cqw/cqh), donc un rendu direct — pas besoin du transform:scale des
   // miniatures (renderPreviewHtml), réservé aux très petites
   // tailles où les planchers de police en rem entreraient en jeu.
-  // Toujours au premier état : c'est un aperçu de ce qui vient, pas de
-  // là où on s'était arrêté la dernière fois sur cette slide.
-  nextEl.innerHTML = slide ? renderStageHtml(slide, { readonly: true, stateIndex: 0 }) : "";
+  nextEl.innerHTML = next ? renderStageHtml(deck.slides[next.slideIndex], { readonly: true, stateIndex: next.stateIndex }) : "";
 }
 
 function renderThumbs() {
@@ -150,6 +146,13 @@ function renderThumbs() {
     const footer = document.createElement("div");
     footer.className = "presenter-thumb__footer";
 
+    // Numéro de slide (position réelle dans le deck, 1-indexé) : repère
+    // rapide pour s'y retrouver en RDV sans avoir à lire chaque titre —
+    // même numérotation que presenter__position au-dessus de la scène.
+    const num = document.createElement("span");
+    num.className = "presenter-thumb__num";
+    num.textContent = i + 1;
+
     const label = document.createElement("span");
     label.className = "presenter-thumb__label";
     label.textContent = slide.title || slide.titre || slide.id;
@@ -167,7 +170,7 @@ function renderThumbs() {
       if (i === currentIndex) broadcastCurrent();
     });
 
-    footer.append(label, toggle);
+    footer.append(num, label, toggle);
     item.append(btn, footer);
     thumbsEl.appendChild(item);
   });
@@ -195,12 +198,14 @@ function goTo(index) {
 
 // Avance : état suivant de la slide courante si elle a des états
 // restants (voir js/deck.js), sinon slide visible suivante. Un
-// changement d'état seul ne redessine ni les miniatures ni l'aperçu
-// suivant — inchangés tant qu'on reste sur la même slide. Seul un
-// changement d'état AU SEIN de la même slide joue l'animation de
-// révélation (voir js/reveal.js) : un changement de slide a déjà le
-// bandeau de miniatures/l'aperçu suivant comme signal, pas besoin d'un
-// fondu de plus à l'arrivée.
+// changement d'état seul ne redessine pas les miniatures — inchangées
+// tant qu'on reste sur la même slide. L'aperçu "suivant" est en revanche
+// toujours redessiné : il reflète ce qu'affichera le PROCHAIN clic, donc
+// change à chaque état, pas seulement à chaque changement de slide (voir
+// renderNext()). Seul un changement d'état AU SEIN de la même slide joue
+// l'animation de révélation (voir js/reveal.js) : un changement de slide
+// a déjà le bandeau de miniatures comme signal, pas besoin d'un fondu de
+// plus à l'arrivée.
 function goNext() {
   const next = stepForward(deck.slides, hidden, { slideIndex: currentIndex, stateIndex });
   if (!next) return;
@@ -209,8 +214,8 @@ function goNext() {
   currentIndex = next.slideIndex;
   stateIndex = next.stateIndex;
   renderCurrent(!slideChanged);
+  renderNext();
   if (slideChanged) {
-    renderNext();
     renderThumbs();
   }
   broadcastCurrent(!slideChanged);
@@ -225,8 +230,8 @@ function goPrev() {
   currentIndex = prev.slideIndex;
   stateIndex = prev.stateIndex;
   renderCurrent(!slideChanged);
+  renderNext();
   if (slideChanged) {
-    renderNext();
     renderThumbs();
   }
   broadcastCurrent(!slideChanged);
