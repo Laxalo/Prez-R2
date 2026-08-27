@@ -160,6 +160,11 @@ export const ICONS = {
   "placement-sur-mesure": '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>',
   "gestion-cle-en-main":
     '<circle cx="8" cy="8.5" r="3.3"/><line x1="10.3" y1="10.8" x2="20.5" y2="21"/><line x1="15.8" y1="16.3" x2="18.3" y2="13.8"/><line x1="18" y1="18.5" x2="20.5" y2="16"/>',
+  // Flèche qui redescend vers une ligne de base — une charge (l'impôt)
+  // qu'on fait baisser, pas monter (à l'inverse de "rendement-locatif",
+  // seule autre icône de mouvement du registre) — devant l'économie
+  // d'impôt du plan d'investissement PER ("Plan d'investissement").
+  "economie-impot": '<path d="M12 4V14M12 14L8 10M12 14L16 10"/><path d="M5 19H19"/>',
 };
 
 export function iconSvg(name, color, size = 38) {

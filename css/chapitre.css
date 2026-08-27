@@ -42,7 +42,8 @@
 .slide__stage.slide--scpi-mecanisme,
 .slide__stage.slide--scpi-cadence,
 .slide__stage.slide--atouts,
-.slide__stage.slide--scpi-financement {
+.slide__stage.slide--scpi-financement,
+.slide__stage.slide--per-simulation {
   background: var(--papier);
   --chap-ink-rgb: var(--encre-rgb);
 }
@@ -60,7 +61,8 @@
 .slide--scpi-mecanisme .slide__content,
 .slide--scpi-cadence .slide__content,
 .slide--atouts .slide__content,
-.slide--scpi-financement .slide__content {
+.slide--scpi-financement .slide__content,
+.slide--per-simulation .slide__content {
   padding: 0;
   color: rgb(var(--chap-ink-rgb));
 }
@@ -3024,6 +3026,183 @@
   font-size: 1.5cqw;
   line-height: 1.15;
   white-space: nowrap;
+}
+
+/* ---------- Gabarit "Plan d'investissement" (chapitre PER) ----------
+   Reprend le vocabulaire de "Investir en financement" (colonne empilée,
+   repères latéraux) pour une seule colonne à trois bandes — voir l'en-
+   tête de per-simulation.js. */
+
+.per-simulation {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 2.8125cqw 4.84375cqw 4.21875cqw;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans-chapitre);
+}
+
+.per-simulation__intro {
+  padding-top: 2.34375cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.703125cqw;
+}
+
+.per-simulation__title {
+  font-size: max(1.7rem, 3.125cqw);
+}
+
+.per-simulation__sub {
+  margin: 0;
+  font-weight: 450;
+  font-size: 1.640625cqw;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+.per-simulation__stage {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5cqw;
+}
+
+.per-simulation__lead {
+  margin: 0;
+  font-weight: 450;
+  font-size: 1.09375cqw;
+  color: rgba(var(--chap-ink-rgb), 0.7);
+}
+
+.per-simulation__lead strong {
+  font-weight: 700;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+.per-simulation__column {
+  display: flex;
+  align-items: flex-end;
+  gap: 3.125cqw;
+}
+
+.per-simulation__bar-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9375cqw;
+}
+
+/* Empilement par le bas (justify-content:flex-end) : les bandes
+   remplies restent toujours collées au socle de la colonne, quel que
+   soit leur nombre à un état donné — jamais de bande "flottante" en
+   haut d'une colonne encore vide au-dessus. Bordure fine visible dès
+   l'état 1 (colonne vide) : on voit le contenant avant qu'il ne se
+   remplisse, jamais un rectangle qui apparaît déjà à moitié plein. */
+.per-simulation__bar-wrap {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.22);
+  border-radius: 0.234375cqw;
+}
+
+.per-simulation__bar {
+  flex: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.per-simulation__bar--effort { background: var(--bleu); }
+.per-simulation__bar--economie { background: var(--vert); }
+.per-simulation__bar--rendement { background: var(--or); }
+
+.per-simulation__bar-caption {
+  font-weight: 700;
+  font-size: 0.9375cqw;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.55);
+}
+
+/* bottom:100% de la colonne : suit son sommet réel, atteint seulement
+   une fois la bande "rendement" pleine (voir per-simulation.js) — pas
+   une position calculée à part, qui se désynchroniserait si les
+   proportions changent. */
+.per-simulation__capital-value {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.703125cqw;
+  font-family: var(--font-serif-chapitre);
+  font-weight: 400;
+  font-size: 2.5cqw;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: rgb(var(--chap-ink-rgb));
+}
+
+/* Repères latéraux (icône + libellé + montant), un par bande — hauteur
+   fixe (posée en style inline, BAR_MAX_CQW côté JS) pour que bottom:Xcqw
+   tombe au bon niveau indépendamment de l'état d'avancement des bandes
+   qu'ils commentent, même principe que .scpi-financement__levier-axis. */
+.per-simulation__reperes {
+  position: relative;
+  flex: none;
+  width: 20.3125cqw;
+}
+
+.per-simulation__repere {
+  position: absolute;
+  left: 0;
+  transform: translateY(50%);
+  display: flex;
+  align-items: center;
+  gap: 0.9375cqw;
+  transition: opacity var(--chap-duration-fade) linear;
+}
+
+.per-simulation__repere--invisible {
+  opacity: 0;
+}
+
+.per-simulation__repere-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15625cqw;
+}
+
+.per-simulation__repere-label {
+  font-weight: 700;
+  font-size: 1.09375cqw;
+  line-height: 1.2;
+}
+
+.per-simulation__repere-montant {
+  font-weight: 450;
+  font-size: 0.9375cqw;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: rgba(var(--chap-ink-rgb), 0.6);
+}
+
+.per-simulation__footnote {
+  flex: none;
+  margin: 0;
+  padding-top: 0.9375cqw;
+  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.16);
+  font-weight: 450;
+  font-size: 0.8828125cqw;
+  line-height: 1.5;
+  color: rgba(var(--chap-ink-rgb), 0.45);
 }
 
 /* ---------- Gabarit "Clôture" (dernière slide du RDV, fond encre à la
