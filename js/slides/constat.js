@@ -146,12 +146,15 @@ export function render(slide, opts = {}) {
         <span class="constat__rule"></span>
       </div>
 
-      <div class="constat__kpis">
-        ${kpiHtml(kpis[0], { visible: visibleKpiCount >= 1, entering: animate && stateIndex === shares.length + 2 })}
-        ${kpiRuleHtml(visibleKpiCount >= 2)}
-        ${kpiHtml(kpis[1], { visible: visibleKpiCount >= 2, entering: animate && stateIndex === shares.length + 3 })}
-        ${kpiRuleHtml(visibleKpiCount >= 3)}
-        ${kpiHtml(kpis[2], { visible: visibleKpiCount >= 3, entering: animate && stateIndex === shares.length + 4 })}
+      <div class="constat__kpis${kpis.length !== 3 ? " constat__kpis--compact" : ""}">
+        ${kpis
+          .map((kpi, i) => {
+            const visible = visibleKpiCount > i;
+            const entering = animate && stateIndex === shares.length + 2 + i;
+            const rule = i > 0 ? kpiRuleHtml(visibleKpiCount > i) : "";
+            return rule + kpiHtml(kpi, { visible, entering });
+          })
+          .join("")}
       </div>
 
       <div class="${enveloppesCls}">

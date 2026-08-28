@@ -315,6 +315,22 @@
   align-items: end;
 }
 
+/* Variante compacte (kpis.length ≠ 3, ex. un seul KPI) : la grille à 3
+   colonnes pleine largeur ci-dessus étirerait un unique KPI vers la
+   gauche (1ère des 3 colonnes 1fr). En flex centré, chaque KPI garde sa
+   largeur de contenu — le groupe se centre sur toute la largeur de la
+   scène, quel que soit son nombre d'items. margin-top:auto (au lieu du
+   écart fixe ci-dessus) : partagé avec le margin-top:auto de
+   .constat__enveloppes, ça place ce groupe à égale distance du filet or
+   du titre au-dessus et du diagramme de répartition en dessous. */
+.constat__kpis--compact {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 3.4375cqw;
+  margin-top: auto;
+}
+
 .constat__kpi-rule {
   background: rgba(var(--chap-ink-rgb), 0.18);
   height: 9.21875cqw;
