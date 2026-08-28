@@ -6,9 +6,11 @@ data/deck.json
 
 # Garde-fou : dépôt public — aucun fichier client réel ne doit jamais y
 # être suivi par erreur. _demo.json (gabarit de référence, données
-# fictives) est la seule exception explicitement autorisée.
+# fictives) et les exceptions ci-dessous (RDV exemples publiés
+# volontairement, jamais un client réel) sont les seules autorisées.
 data/clients/*.json
 !data/clients/_demo.json
+!data/clients/ambroise-marche.json
 
 # PDF exportés (scripts/export_pdf.py) : contiennent les préconisations
 # réelles d'un client — même garde-fou que data/clients/*.json.

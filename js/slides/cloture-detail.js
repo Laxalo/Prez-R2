@@ -1,5 +1,5 @@
 import { escapeHtml } from "../editable.js";
-import { renderChapRail, renderATerme } from "./_chapitre.js";
+import { renderChapRail, renderATerme, isATermeList } from "./_chapitre.js";
 
 // Gabarit "Clôture" : dernière slide du RDV, fond encre à la manière de
 // "Constat" (même rail, même bloc titre+filet or) — un bookend visuel du
@@ -66,7 +66,7 @@ export function render(slide, opts = {}) {
         ${rows}
       </div>
 
-      <div class="cloture__aterme${slide.aTerme.bullets && slide.aTerme.bullets.length ? " cloture__aterme--list" : ""}${!showATerme ? " cloture__aterme--invisible" : ""}${aTermeEntering ? " is-entering" : ""}"${aTermeEntering ? " data-reveal" : ""}>
+      <div class="cloture__aterme${isATermeList(slide.aTerme) ? " cloture__aterme--list" : ""}${!showATerme ? " cloture__aterme--invisible" : ""}${aTermeEntering ? " is-entering" : ""}"${aTermeEntering ? " data-reveal" : ""}>
         <span class="cloture__aterme-label">${escapeHtml(slide.aTerme.label)}</span>
         ${renderATerme(slide.aTerme)}
       </div>

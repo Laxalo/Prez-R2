@@ -1,0 +1,1116 @@
+{
+  "meta": {
+    "title": "Accompagnement patrimonial",
+    "client": "Ambroise Marche",
+    "date": "2026-08-28",
+    "chapitres": [
+      {
+        "numero": "01",
+        "libelle": "Constat"
+      },
+      {
+        "numero": "02",
+        "libelle": "Ingénieries"
+      },
+      {
+        "numero": "03",
+        "libelle": "Préconisations"
+      }
+    ]
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "type": "cover",
+      "kicker": "Ambroise Marche — 2ᵉ rendez-vous",
+      "title": "Accompagnement patrimonial"
+    },
+    {
+      "id": "constat-demo",
+      "type": "constat",
+      "chapitreActif": 1,
+      "titre": "Synthèse patrimoniale",
+      "kpis": [
+        {
+          "label": "Effort d'épargne mensuel",
+          "valeur": "5 000 €",
+          "accent": "or"
+        }
+      ],
+      "supports": [
+        {
+          "nom": "Livret A",
+          "montant": 23182,
+          "horizon": "disponible"
+        },
+        {
+          "nom": "Livret Jeune",
+          "montant": 1800,
+          "horizon": "disponible"
+        },
+        {
+          "nom": "Compte courant",
+          "montant": 4000,
+          "horizon": "disponible"
+        },
+        {
+          "nom": "Assurance vie",
+          "montant": 73314,
+          "horizon": "disponible"
+        },
+        {
+          "nom": "PEA",
+          "montant": 88600,
+          "horizon": "5 ans"
+        }
+      ],
+      "objectifs": [
+        "Réorganiser votre patrimoine",
+        "Optimiser la rentabilité de vos placements financiers",
+        "Diversifier votre patrimoine",
+        "Optimiser la rentabilité de votre patrimoine",
+        "Optimiser la trésorerie professionnelle",
+        "Optimiser la fiscalité de vos revenus",
+        "Préparer votre retraite"
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "av-titre",
+      "type": "section-title",
+      "chapitreActif": 2,
+      "titre": "Assurance vie",
+      "sousTitre": "Présentation de l'ingénierie"
+    },
+    {
+      "id": "av-pourquoi",
+      "type": "chap-regles",
+      "chapitreActif": 2,
+      "kicker": "Pourquoi l'assurance vie ?",
+      "titre": "Un super livret",
+      "titreHalo": "livret",
+      "picto": "disponibilite",
+      "lead": "Votre épargne reste disponible à tout moment, elle n'est jamais bloquée.",
+      "regles": [
+        {
+          "numero": "1",
+          "label": "Rendement"
+        },
+        {
+          "numero": "2",
+          "label": "Fiscalité"
+        },
+        {
+          "numero": "3",
+          "label": "Transmission"
+        }
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "av-dormante",
+      "type": "epargne-dormante",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Rendement",
+        "Fiscalité",
+        "Transmission"
+      ],
+      "railActive": 1,
+      "titre": "Ne pas investir, c'est perdre à coup sûr",
+      "lead": "Une perte invisible à court terme, mais réelle et chiffrable sur la durée.",
+      "diagrammeIntro": "Ce que valent 10 000 € laissés sur un compte courant, en pouvoir d'achat d'aujourd'hui, avec une inflation de 2 % par an :",
+      "horizons": [
+        {
+          "label": "Aujourd'hui",
+          "montant": 10000
+        },
+        {
+          "label": "Dans 10 ans",
+          "montant": 8200
+        },
+        {
+          "label": "Dans 20 ans",
+          "montant": 6730
+        },
+        {
+          "label": "Dans 30 ans",
+          "montant": 5520
+        }
+      ],
+      "hypothese": "Hypothèse : inflation de 2 % par an (objectif d'inflation de la Banque Centrale Européenne). Montants exprimés en pouvoir d'achat d'aujourd'hui.",
+      "states": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "av-composition",
+      "type": "deux-poches",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Rendement",
+        "Fiscalité",
+        "Transmission"
+      ],
+      "railActive": 1,
+      "titre": "Un univers d'investissement très riche",
+      "colonnes": [
+        {
+          "nom": "Fonds en euros",
+          "tag": "Sécurité",
+          "couleur": "ink",
+          "lead": "On y cherche la sécurité, en acceptant un rendement limité.",
+          "items": [
+            {
+              "icon": "bouclier",
+              "texte": "Capital garanti"
+            },
+            {
+              "icon": "cliquet",
+              "texte": "Effet cliquet : les gains acquis ne se reperdent pas"
+            },
+            {
+              "icon": "plafond",
+              "texte": "Un rendement qui plafonne"
+            }
+          ]
+        },
+        {
+          "nom": "Unités de compte",
+          "tag": "Performance",
+          "couleur": "bleu",
+          "lead": "Pour aller chercher plus de rendement, en maîtrisant son risque grâce à une diversification unique.",
+          "items": [
+            {
+              "icon": "risque",
+              "texte": "Investir dans les entreprises et l'économie"
+            },
+            {
+              "icon": "formes",
+              "texte": "Actions, obligations, immobilier, private equity, fonds alternatifs ..."
+            },
+            {
+              "icon": "globe",
+              "texte": "Diversification géographique et sectorielle"
+            }
+          ]
+        }
+      ],
+      "pratique": {
+        "label": "En pratique",
+        "texte": "Une gestion sur-mesure personnalisable et ajustable au fil du temps."
+      },
+      "states": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "av-impact-40",
+      "type": "impact-fiscal",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Rendement",
+        "Fiscalité",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "titre": "Valoriser son épargne, à l'abri de la fiscalité",
+      "hypothese": "Hypothèse : 1 000 € investis chaque mois, 5 % de rendement annuel, sur 40 ans.",
+      "horizonLabel": "40 ans",
+      "verse": 480000,
+      "assuranceVie": 1480000,
+      "bancaire": 1031000,
+      "ecart": 449000,
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "av-rachats",
+      "type": "fiscalite-rachats",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Rendement",
+        "Fiscalité",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "titre": "Percevoir des revenus optimisés",
+      "states": [
+        {
+          "svg": "capital-seul",
+          "legend": [
+            {
+              "dot": "encre",
+              "texte": "Capital versé",
+              "muted": false
+            }
+          ]
+        },
+        {
+          "svg": "couronne-neutre",
+          "legend": [
+            {
+              "dot": "neutre",
+              "texte": "Gains générés par le contrat",
+              "muted": false
+            },
+            {
+              "dot": "encre",
+              "texte": "Capital versé",
+              "muted": true
+            }
+          ]
+        },
+        {
+          "svg": "couronne-bleu",
+          "legend": [
+            {
+              "dot": "bleu",
+              "texte": "Gains imposés",
+              "muted": false
+            },
+            {
+              "dot": "encre",
+              "texte": "Capital versé",
+              "muted": true
+            }
+          ]
+        },
+        {
+          "svg": "couronne-or",
+          "legend": [
+            {
+              "dot": "vert",
+              "texte": "Gains non imposés",
+              "muted": false
+            },
+            {
+              "dot": "encre",
+              "texte": "Capital versé",
+              "muted": true
+            }
+          ]
+        },
+        {
+          "svg": "coin-bleu",
+          "legend": [
+            {
+              "dot": "bleu",
+              "texte": "Gains imposés",
+              "muted": false
+            },
+            {
+              "dot": "encre",
+              "texte": "La part de capital retirée n'est jamais imposée",
+              "muted": false
+            },
+            {
+              "dot": "vert",
+              "texte": "Gains non imposés",
+              "muted": true
+            }
+          ],
+          "avant8": {
+            "label": "Avant 8 ans",
+            "lignes": [
+              "Les gains inclus dans le retrait sont imposables à 30 % (12,8 % d'impôt sur le revenu et 17,2 % de prélèvements sociaux)."
+            ]
+          }
+        },
+        {
+          "svg": "coin-or",
+          "legend": [
+            {
+              "dot": "vert",
+              "texte": "Gains non imposés",
+              "muted": false
+            },
+            {
+              "dot": "encre",
+              "texte": "La part de capital retirée n'est jamais imposée",
+              "muted": true
+            }
+          ],
+          "avant8": {
+            "label": "Avant 8 ans",
+            "lignes": [
+              "Les gains inclus dans le retrait sont imposables à 30 % (12,8 % d'impôt sur le revenu et 17,2 % de prélèvements sociaux)."
+            ]
+          },
+          "apres8": {
+            "label": "Après 8 ans",
+            "lignes": [
+              "L'impôt sur le revenu pour les gains est réduit à 7,5 % (+17,2 % de prélèvements sociaux).",
+              "Les gains en dessous des abattements annuels ne sont pas imposés à l'impôt sur le revenu :"
+            ],
+            "montants": [
+              {
+                "valeur": 4600,
+                "who": "Personne seule",
+                "icon": "personne"
+              },
+              {
+                "valeur": 9200,
+                "who": "Couple",
+                "icon": "couple"
+              }
+            ]
+          }
+        },
+        {}
+      ]
+    },
+    {
+      "id": "av-transmission",
+      "type": "transmission",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Rendement",
+        "Fiscalité",
+        "Transmission"
+      ],
+      "railActive": 3,
+      "titre": "L'assurance vie pour protéger ses proches",
+      "sousTitre": "Un outil de transmission patrimoniale sur-mesure, optimisée fiscalement",
+      "clause": {
+        "label": "Clause bénéficiaire",
+        "texte": "Un ou plusieurs bénéficiaires, libre choix des montants"
+      },
+      "donation": {
+        "label": "Versements avant 70 ans",
+        "montant": 152500,
+        "note": "d'abattement par bénéficiaire, exonéré de droits de succession",
+        "beneficiaires": [
+          "Enfant 1",
+          "Enfant 2",
+          "Enfant 3"
+        ]
+      },
+      "apres70": {
+        "label": "Versements après 70 ans",
+        "bullets": [
+          "Abattement global de 30 500 € sur le capital versé",
+          "Exonération totale des plus-values"
+        ]
+      },
+      "states": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "av-simulation",
+      "type": "section-title",
+      "chapitreActif": 2,
+      "titre": "Assurance vie",
+      "sousTitre": "Plan d'investissement"
+    },
+    {
+      "id": "av-synthese",
+      "type": "chap-regles",
+      "chapitreActif": 2,
+      "kicker": "En synthèse",
+      "titre": "L'assurance vie",
+      "picto": "disponibilite",
+      "lead": "Votre épargne reste disponible à tout moment, elle n'est jamais bloquée.",
+      "regles": [
+        {
+          "numero": "1",
+          "label": "Rendement"
+        },
+        {
+          "numero": "2",
+          "label": "Fiscalité"
+        },
+        {
+          "numero": "3",
+          "label": "Transmission"
+        }
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "scpi-titre",
+      "type": "section-title",
+      "chapitreActif": 2,
+      "titre": "SCPI",
+      "sousTitre": "Présentation de l'ingénierie"
+    },
+    {
+      "id": "scpi-mecanisme",
+      "type": "scpi-mecanisme",
+      "chapitreActif": 2,
+      "titre": "Comment ça marche ?",
+      "actifs": [
+        "Bureaux",
+        "Commerces",
+        "Santé",
+        "Hôtellerie"
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "scpi-atouts",
+      "type": "atouts",
+      "chapitreActif": 2,
+      "titre": "Les atouts",
+      "atouts": [
+        {
+          "numero": "01",
+          "icon": "rendement-locatif",
+          "label": "Rendement locatif optimisé",
+          "bullets": [
+            "L'immobilier : une valeur refuge à long terme",
+            "Un rendement attractif assis sur de l'immobilier professionnel"
+          ]
+        },
+        {
+          "numero": "02",
+          "icon": "risque-maitrise",
+          "label": "Un risque maîtrisé",
+          "bullets": [
+            "Une forte diversification du patrimoine",
+            "Une mutualisation du risque locatif"
+          ]
+        },
+        {
+          "numero": "03",
+          "icon": "placement-sur-mesure",
+          "label": "Un placement sur mesure",
+          "bullets": [
+            "Un placement accessible",
+            "Un montant d'investissement calibré",
+            "Possibilité d'acquisition progressive",
+            "Une transmission simplifiée"
+          ]
+        },
+        {
+          "numero": "04",
+          "icon": "gestion-cle-en-main",
+          "label": "Une gestion clé en mains",
+          "bullets": [
+            "Une procédure d'acquisition simple (pas de notaire)",
+            "Une gestion locative déléguée à des experts"
+          ]
+        }
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "scpi-cadence",
+      "type": "scpi-cadence",
+      "chapitreActif": 2,
+      "titre": "Les points clés",
+      "states": [
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "scpi-simulation",
+      "type": "section-title",
+      "chapitreActif": 2,
+      "titre": "SCPI",
+      "sousTitre": "Plan d'investissement"
+    },
+    {
+      "id": "scpi-financement",
+      "type": "scpi-financement",
+      "chapitreActif": 2,
+      "titre": "Investir en financement",
+      "sousTitre": "L'effet de levier décuple le patrimoine immobilier constitué, pour un même effort d'épargne",
+      "capitalCible": 85000,
+      "patrimoineReinvesti": 57695,
+      "dureeAnnees": 25,
+      "financementMensuel": 496,
+      "revenuMensuel": 361,
+      "tauxDistribution": "5,1 %",
+      "tauxFinancement": "5,85 %",
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-titre",
+      "type": "section-title",
+      "chapitreActif": 2,
+      "titre": "PER",
+      "sousTitre": "Présentation de l'ingénierie"
+    },
+    {
+      "id": "per-pourquoi",
+      "type": "chap-regles",
+      "chapitreActif": 2,
+      "kicker": "Pourquoi le PER ?",
+      "titre": "Une solution retraite aux multiples atouts",
+      "titreHalo": "atouts",
+      "picto": "as-de-coeur",
+      "lead": "",
+      "regles": [
+        {
+          "numero": "1",
+          "label": "Retraite"
+        },
+        {
+          "numero": "2",
+          "label": "Impôts"
+        },
+        {
+          "numero": "3",
+          "label": "Prévoyance"
+        },
+        {
+          "numero": "4",
+          "label": "Transmission"
+        },
+        {
+          "numero": "5",
+          "label": "Résidence principale"
+        }
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-mecanisme",
+      "type": "formule",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "kicker": "Comment ça marche ?",
+      "titre": "Une économie d'impôt offerte à chaque versement",
+      "titreHalo": "économie d'impôt",
+      "principe": {
+        "a": "Montant de votre versement",
+        "b": "Votre TMI",
+        "resultat": "Votre économie d'impôt"
+      },
+      "exemple": {
+        "icon": "capital",
+        "aValeur": "300 €/mois",
+        "aNote": "3 600 € par an",
+        "bValeur": "TMI à 30 %",
+        "resultatValeur": "90 €/mois",
+        "resultatNote": "1 080 € par an"
+      },
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-mecanisme-tmi45",
+      "type": "formule",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "kicker": "Comment ça marche ?",
+      "titre": "Une économie d'impôt offerte à chaque versement",
+      "titreHalo": "économie d'impôt",
+      "principe": {
+        "a": "Montant de votre versement",
+        "b": "Votre TMI",
+        "resultat": "Votre économie d'impôt"
+      },
+      "exemple": {
+        "icon": "capital",
+        "aValeur": "300 €/mois",
+        "aNote": "3 600 € par an",
+        "bValeur": "TMI à 45 %",
+        "resultatValeur": "123 €/mois",
+        "resultatNote": "1 476 € par an"
+      },
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-simulation",
+      "type": "per-simulation",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 1,
+      "titre": "Le plan d'investissement",
+      "sousTitre": "Constitution de votre capital retraite",
+      "versementMensuel": 300,
+      "tmiPct": 30,
+      "dureeAnnees": 20,
+      "rendementAnnuelPct": 3.2,
+      "rendementTotal": 28000,
+      "states": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-exemples",
+      "type": "per-exemples",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "titre": "Exemples chiffrés",
+      "tableaux": [
+        {
+          "colonnes": [
+            {
+              "label": "Versement 2027",
+              "valeur": "0 €",
+              "accent": "or"
+            },
+            {
+              "label": "Revenu Imposable Estimé",
+              "valeur": "200 000 €"
+            },
+            {
+              "label": "Impôt estimé",
+              "valeur": "66 523 €",
+              "shade": true,
+              "encadreBleu": true,
+              "noteDroite": "Diminuable grâce au PACS, via le passage à 2 parts fiscales",
+              "encadreOrdre": 2
+            }
+          ]
+        },
+        {
+          "colonnes": [
+            {
+              "label": "Versement 2027",
+              "note": "10% revenus 2026 + rattrapage plafond 2025",
+              "valeur": "24 710 €",
+              "accent": "or",
+              "encadreBleu": true,
+              "noteBas": "Augmentable grâce au PACS, via la mutualisation des plafonds",
+              "encadreOrdre": 1
+            },
+            {
+              "label": "Revenu Net fiscal Estimé",
+              "valeur": "175 290 €"
+            },
+            {
+              "label": "Impôt estimé",
+              "valeur": "55 669 €",
+              "accent": "bleu",
+              "shade": true
+            },
+            {
+              "label": "Gain Fiscal",
+              "valeur": "10 854 €",
+              "accent": "vert",
+              "gold": true
+            }
+          ]
+        }
+      ],
+      "notePied": "Illustration non contractuelle, à partir de données fournies par le simulateur.",
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "resultat": {
+        "label": "Rentabilité instantanée",
+        "valeur": "+45 %"
+      }
+    },
+    {
+      "id": "per-plafond",
+      "type": "atouts",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "titre": "En pratique, le plafond de déduction TNS",
+      "atouts": [
+        {
+          "numero": "01",
+          "icon": "plafond",
+          "label": "Le plafond annuel pour 2027",
+          "bullets": [
+            "Montant déductible : 10 % des bénéfices 2026 + 15% de la part comprise entre 1 et 8 PASS (48 060€)",
+            "Minimum : 4 806 €, même en l'absence de revenus suffisants (10 % du PASS 2026)",
+            "Maximum : plafonné à 88 911 € (10% de 8 PASS 2026 + 15% de 7 PASS 2026)"
+          ]
+        },
+        {
+          "numero": "02",
+          "icon": "cycle",
+          "label": "Le rattrapage",
+          "bullets": [
+            "Les plafonds non utilisés se cumulent sur les 5 dernières années"
+          ]
+        },
+        {
+          "numero": "03",
+          "icon": "couple",
+          "label": "La mutualisation",
+          "bullets": [
+            "Un conjoint ou partenaire de Pacs peut utiliser le plafond disponible de l'autre",
+            "Une optimisation à l'échelle du foyer fiscal"
+          ]
+        }
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-transmission",
+      "type": "transmission",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 4,
+      "titre": "Le PER pour protéger ses proches",
+      "sousTitre": "",
+      "clause": {
+        "label": "Clause bénéficiaire",
+        "texte": "Un ou plusieurs bénéficiaires, libre choix des montants"
+      },
+      "donation": {
+        "label": "Décès avant 70 ans",
+        "montant": 152500,
+        "note": "d'abattement par bénéficiaire, exonéré de droits de succession",
+        "beneficiaires": [
+          "Enfant 1",
+          "Enfant 2",
+          "Enfant 3"
+        ]
+      },
+      "apres70": {
+        "label": "Décès après 70 ans",
+        "bullets": [
+          "Abattement global de 30 500 € commun pour tous les bénéficiaires"
+        ]
+      },
+      "states": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "per-synthese",
+      "type": "chap-regles",
+      "chapitreActif": 2,
+      "kicker": "En synthèse",
+      "titre": "Le plan d'épargne retraite",
+      "picto": "as-de-coeur",
+      "lead": "Un placement qui combine retraite, fiscalité, prévoyance et transmission.",
+      "regles": [
+        {
+          "numero": "1",
+          "label": "Retraite"
+        },
+        {
+          "numero": "2",
+          "label": "Impôts"
+        },
+        {
+          "numero": "3",
+          "label": "Prévoyance"
+        },
+        {
+          "numero": "4",
+          "label": "Transmission"
+        }
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "cloture-reflexion",
+      "type": "cloture-reflexion",
+      "chapitreActif": 3,
+      "titre": "Préconisations patrimoniales",
+      "budget": [
+        "Capacité d'épargne mensuelle : 5 000 €/mois."
+      ],
+      "preconisations": [
+        {
+          "nom": "Assurance-vie",
+          "questions": [
+            "Quid du versement initial ?",
+            "Quid du versement programmé ?"
+          ],
+          "bullets": [
+            "Rentabiliser ton épargne, tout en la gardant disponible",
+            "Diversifier les moteurs de performances de ton patrimoine",
+            "Placer ton épargne à l'abri de la fiscalité, et hors masse successorale"
+          ]
+        },
+        {
+          "nom": "SCPI en direct",
+          "questions": [
+            "Quid du versement initial ?",
+            "Quid du versement programmé ?"
+          ],
+          "bullets": [
+            "SCPI européennes récentes et diversifiées, pour constituer du patrimoine",
+            "Rentabiliser ton effort d'épargne, prendre en compte le contexte de ta fiscalité",
+            "Appréhender le contexte du crédit (parade – levier) : augmentation de ton niveau de revenu annuel"
+          ]
+        },
+        {
+          "nom": "Optimisation de ta personne morale",
+          "questions": [],
+          "bullets": [
+            "Étude de la pertinence de l'évolution du statut juridique, fiscal et social de l'activité - Point cabinet expertise comptable partenaire"
+          ]
+        }
+      ],
+      "aTerme": {
+        "label": "À terme",
+        "colonnes": [
+          [
+            {
+              "texte": "Étude de la création d'une société mère pour bénéficier du régime mère-fille",
+              "sousBullets": [
+                "Point cabinet d'avocat partenaire"
+              ]
+            }
+          ],
+          [
+            {
+              "texte": "Optimisation de ta fiscalité"
+            },
+            {
+              "texte": "Ingénierie du contrat de capitalisation",
+              "puce": false
+            },
+            {
+              "texte": "Ingénierie de l'investissement en usufruit temporaire de SCPI",
+              "puce": false
+            },
+            {
+              "texte": "Ingénierie de l'investissement immobilier en financement",
+              "puce": false
+            }
+          ]
+        ]
+      },
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "cloture-detail",
+      "type": "cloture-detail",
+      "chapitreActif": 3,
+      "titre": "Préconisations patrimoniales",
+      "budget": [
+        "Capacité d'épargne mensuelle : 5 000 €/mois."
+      ],
+      "preconisations": [
+        {
+          "nom": "Assurance-vie",
+          "montant": "À définir",
+          "bullets": [
+            "Rentabiliser ton épargne, tout en la gardant disponible",
+            "Diversifier les moteurs de performances de ton patrimoine",
+            "Placer ton épargne à l'abri de la fiscalité, et hors masse successorale"
+          ]
+        },
+        {
+          "nom": "SCPI en direct",
+          "montant": "À définir",
+          "bullets": [
+            "SCPI européennes récentes et diversifiées, pour constituer du patrimoine",
+            "Rentabiliser ton effort d'épargne, prendre en compte le contexte de ta fiscalité",
+            "Appréhender le contexte du crédit (parade – levier) : augmentation de ton niveau de revenu annuel"
+          ]
+        },
+        {
+          "nom": "Optimisation de ta personne morale",
+          "montant": "",
+          "bullets": [
+            "Étude de la pertinence de l'évolution du statut juridique, fiscal et social de l'activité - Point cabinet expertise comptable partenaire"
+          ]
+        }
+      ],
+      "aTerme": {
+        "label": "À terme",
+        "colonnes": [
+          [
+            {
+              "texte": "Étude de la création d'une société mère pour bénéficier du régime mère-fille",
+              "sousBullets": [
+                "Point cabinet d'avocat partenaire"
+              ]
+            }
+          ],
+          [
+            {
+              "texte": "Optimisation de ta fiscalité"
+            },
+            {
+              "texte": "Ingénierie du contrat de capitalisation",
+              "puce": false
+            },
+            {
+              "texte": "Ingénierie de l'investissement en usufruit temporaire de SCPI",
+              "puce": false
+            },
+            {
+              "texte": "Ingénierie de l'investissement immobilier en financement",
+              "puce": false
+            }
+          ]
+        ]
+      },
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    }
+  ]
+}

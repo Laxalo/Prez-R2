@@ -3498,7 +3498,7 @@
 }
 
 .cloture__rule {
-  margin-top: 1.5625cqw;
+  margin-top: 0.9375cqw;
   width: 5.46875cqw;
   height: 0.15625cqw;
   background: var(--or);
@@ -3510,7 +3510,7 @@
    qu'une seule phrase à rallonge, chacune sur SA ligne (pas un
    retour à la ligne automatique dont dépendrait la coupure). */
 .cloture__budget {
-  margin: 1.09375cqw auto 0;
+  margin: 0.625cqw auto 0;
   max-width: 88cqw;
 }
 
@@ -3600,9 +3600,9 @@
 .cloture-d__row-questions {
   flex: none;
   display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  gap: 0.9375cqw;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15625cqw;
 }
 
 /* Révélées au clic, une fois les blocs déjà apparus (voir
@@ -3635,6 +3635,26 @@
   gap: 0.9375cqw;
 }
 
+/* Variante "réflexion" (cloture-reflexion.js) : une puce qui porte aussi
+   une question empilée à droite (voir .cloture-d__row-questions) — la
+   1ère question d'une préconisation se pose à côté du nom, les
+   suivantes à côté d'une puce, plutôt que toutes empilées dans l'en-tête
+   (qui pousserait alors tout le bloc de puces vers le bas). Dash+texte
+   regroupés dans .cloture-d__bullet-content pour que
+   justify-content:space-between les traite comme un seul bloc face à la
+   question, exactement comme .cloture-d__row-head le fait pour le nom. */
+.cloture-d__bullet--with-question {
+  justify-content: space-between;
+  gap: 1.5625cqw;
+}
+
+.cloture-d__bullet-content {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9375cqw;
+  min-width: 0;
+}
+
 .cloture-d__bullet-dash {
   flex: none;
   width: 1.09375cqw;
@@ -3661,7 +3681,6 @@
   flex: none;
   margin-top: auto;
   padding-top: 1.09375cqw;
-  border-top: 0.078125cqw solid rgba(var(--chap-ink-rgb), 0.18);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -3707,6 +3726,21 @@
   text-align: left;
 }
 
+/* Une ou plusieurs colonnes (aTerme.colonnes, voir renderATerme() dans
+   _chapitre.js) côte à côte, quand il y a trop de pistes de même rang
+   pour tenir sur une seule colonne verticale sans déborder du cadre. */
+.cloture__aterme-columns {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0.28cqw 3.125cqw;
+}
+
+.cloture__aterme-columns .cloture__aterme-list {
+  flex: 1 1 0;
+}
+
 .cloture__aterme-list {
   margin: 0;
   padding: 0;
@@ -3740,6 +3774,18 @@
   height: 0.0625cqw;
   background: var(--or);
   transform: translateY(-0.3cqw);
+}
+
+/* Sans le tiret doré (voir puce: false, renderATermeItems() dans
+   _chapitre.js) — padding-left égal à la largeur du tiret + le gap
+   ci-dessus, pour que le texte reste aligné avec celui des items qui
+   ont leur tiret. */
+.cloture__aterme-item-text--sans-puce {
+  padding-left: 1.2cqw;
+}
+
+.cloture__aterme-item-text--sans-puce::before {
+  content: none;
 }
 
 .cloture__aterme-sublist {

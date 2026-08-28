@@ -172,25 +172,54 @@ export const ICONS = {
 // courant — voir _demo.json), soit une liste à puces sur deux niveaux
 // (aTerme.bullets, ex. plusieurs pistes distinctes avec leurs propres
 // ingénieries) quand une seule phrase ne suffit plus à résumer toutes
-// les pistes retenues pour plus tard. Rendu partagé : les deux slides
-// affichent le même bloc.
+// les pistes retenues pour plus tard, soit cette même liste répartie en
+// colonnes (aTerme.colonnes, un tableau de listes de puces) quand il y a
+// trop de pistes de même rang pour tenir sur une seule colonne sans
+// déborder du cadre. Rendu partagé : les deux slides affichent le même
+// bloc.
+function renderATermeItems(bullets) {
+  return bullets
+    .map((b) => {
+      const sous = (b.sousBullets || [])
+        .map((s) => `<li class="cloture__aterme-subitem">${escapeHtml(s)}</li>`)
+        .join("");
+      // puce: false — même rang que les autres items (texte blanc,
+      // alignement identique), mais sans le tiret doré devant : pour des
+      // lignes qui prolongent l'item précédent plutôt que d'ouvrir une
+      // nouvelle piste (voir aTerme.colonnes dans les fichiers clients).
+      const textCls =
+        "cloture__aterme-item-text" + (b.puce === false ? " cloture__aterme-item-text--sans-puce" : "");
+      return `
+        <li class="cloture__aterme-item">
+          <span class="${textCls}">${escapeHtml(b.texte)}</span>
+          ${sous ? `<ul class="cloture__aterme-sublist">${sous}</ul>` : ""}
+        </li>
+      `;
+    })
+    .join("");
+}
+
+// Vrai si le bloc "à terme" doit basculer en registre à puces (alignement
+// gauche, voir .cloture__aterme--list) plutôt qu'en phrase centrée —
+// utilisé par cloture-reflexion.js/cloture-detail.js pour poser la
+// classe modificatrice, en miroir de renderATerme() ci-dessous.
+export function isATermeList(aTerme) {
+  return !!(
+    (aTerme.bullets && aTerme.bullets.length) ||
+    (aTerme.colonnes && aTerme.colonnes.length)
+  );
+}
+
 export function renderATerme(aTerme) {
   if (!aTerme) return "";
-  if (aTerme.bullets && aTerme.bullets.length) {
-    const items = aTerme.bullets
-      .map((b) => {
-        const sous = (b.sousBullets || [])
-          .map((s) => `<li class="cloture__aterme-subitem">${escapeHtml(s)}</li>`)
-          .join("");
-        return `
-          <li class="cloture__aterme-item">
-            <span class="cloture__aterme-item-text">${escapeHtml(b.texte)}</span>
-            ${sous ? `<ul class="cloture__aterme-sublist">${sous}</ul>` : ""}
-          </li>
-        `;
-      })
+  if (aTerme.colonnes && aTerme.colonnes.length) {
+    const cols = aTerme.colonnes
+      .map((col) => `<ul class="cloture__aterme-list">${renderATermeItems(col)}</ul>`)
       .join("");
-    return `<ul class="cloture__aterme-list">${items}</ul>`;
+    return `<div class="cloture__aterme-columns">${cols}</div>`;
+  }
+  if (aTerme.bullets && aTerme.bullets.length) {
+    return `<ul class="cloture__aterme-list">${renderATermeItems(aTerme.bullets)}</ul>`;
   }
   return `<p class="cloture__aterme-text">${escapeHtml(aTerme.texte)}</p>`;
 }
