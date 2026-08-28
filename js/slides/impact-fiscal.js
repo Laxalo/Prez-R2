@@ -2,30 +2,34 @@ import { euro, escapeHtml } from "../editable.js";
 import { renderChapRail, renderRailEtapes, iconSvg } from "./_chapitre.js";
 
 // Gabarit "Impact fiscal" (handoff slides assurance vie, GABARITS.md #5)
-// — deux cuves. Révélation progressive en 12 états (voir js/deck.js
+// — deux cuves. Révélation progressive en 11 états (voir js/deck.js
 // stepForward/stepBackward) :
 //   états 1-6 : mécanisme purement illustratif (voir introRender) — un
-//   capital identique, des intérêts qui montent pareil des deux côtés,
-//   puis une partie de ceux de l'épargne bancaire qui s'échappe vers la
-//   flat tax, puis ce qu'il en reste (jamais imposé) qui passe du gris au
-//   vert (rien de tout ça côté assurance vie, mais un bouclier apparaît
-//   pour le MONTRER plutôt que de laisser deviner une absence). Cuves
-//   aussi hautes que celles du graphique chiffré (états 10-12) — seul le
-//   remplissage est illustratif, pas la taille.
-//   état 7 : un clic de pause, le mécanisme reste figé sur son dernier
-//   visuel, rien de nouveau.
-//   état 8 : la phrase d'hypothèse apparaît SEULE — rien d'autre à
+//   capital identique, des intérêts qui montent pareil des deux côtés
+//   (état 2), puis côté épargne bancaire ce qui reste une fois la flat
+//   tax déduite passe au vert (état 3), puis la portion effectivement
+//   partie en impôt apparaît en rouge par-dessus (état 4 — l'ordre est
+//   volontairement celui-ci : on voit d'abord "tout est vert", puis le
+//   rouge vient en retirer une partie), côté assurance vie un bouclier
+//   apparaît (état 5) puis les intérêts passent au vert (état 6, rien de
+//   tout ça n'était jamais menacé, mais on le MONTRE plutôt que de
+//   laisser deviner une absence). Cuves aussi hautes que celles du
+//   graphique chiffré (états 9-11) — seul le remplissage est
+//   illustratif, pas la taille. Pas de clic de pause entre l'état 6 et
+//   l'état 7 (l'hypothèse) : le dernier visuel du mécanisme n'a plus
+//   besoin d'un clic à vide pour s'effacer.
+//   état 7 : la phrase d'hypothèse apparaît SEULE — rien d'autre à
 //   l'écran (les cuves du graphique n'existent pas encore dans le DOM).
-//   état 9 : second clic de pause — la phrase reste seule, les cuves
+//   état 8 : clic de pause — la phrase reste seule, les cuves
 //   n'existent toujours pas (remonté : elles apparaissaient un cran trop
-//   tôt, avant même ce second clic).
-//   état 10 : les cuves apparaissent et se remplissent depuis 0
+//   tôt, avant même ce clic).
+//   état 9 : les cuves apparaissent et se remplissent depuis 0
 //   jusqu'au niveau du capital versé (repère "Versé", voir cuveHtml
 //   stage 0) — remplissage partiel, pas encore le total.
-//   état 11 : les cuves continuent de se remplir du niveau "Versé"
+//   état 10 : les cuves continuent de se remplir du niveau "Versé"
 //   jusqu'en haut ; le total apparaît une fois pleines (stage 1) —
 //   "avant impôt", les deux cuves valent alors la même chose.
-//   état 12 : la cuve bancaire redescend à sa vraie valeur (flat tax
+//   état 11 : la cuve bancaire redescend à sa vraie valeur (flat tax
 //   payée en cours de route) et l'écart apparaît en même temps, à
 //   gauche de cette cuve — "après impôt" (stage 2).
 const CUVE_HEIGHT_CQW = 21.09375; // 270px à 1280 de large
@@ -41,25 +45,31 @@ const INTRO_ESCAPE_H = 3.6; // cqw, portion des intérêts qui s'échappe (banca
 const INTRO_KEPT_H = INTRO_INTEREST_H - INTRO_ESCAPE_H;
 
 // Remplissage capital+intérêts d'une cuve illustrative. escaping=true
-// (bancaire) : à l'état 3, un rectangle rouge se déploie de haut en bas
-// par-dessus les intérêts pour montrer la portion partie en impôt (voir
-// erasedZone). escaping=false (assurance vie) : les intérêts restent à
-// INTEREST_H, un bouclier apparaît au-dessus à l'état 4 pour dire
-// explicitement "rien ne s'échappe ici" plutôt que de ne rien montrer.
+// (bancaire) : à l'état 3, TOUT le gris passe au vert (voir greenAt) ;
+// à l'état 4, un rectangle rouge se déploie de haut en bas par-dessus
+// pour montrer la portion qui, finalement, part en impôt (voir
+// erasedZone) — ordre volontaire : on voit d'abord "tout est gagné",
+// puis le rouge vient en retirer une partie, plutôt que l'inverse.
+// escaping=false (assurance vie) : les intérêts restent à INTEREST_H,
+// un bouclier apparaît au-dessus à l'état 5 pour dire explicitement
+// "rien ne s'échappe ici" plutôt que de ne rien montrer.
 function introCuveHtml({ fillColor, label, escaping, introState, animate }) {
   const interestShown = introState >= 1;
   const interestEntering = animate && introState === 1;
-  const escapeShown = escaping && introState >= 2;
-  const escapeEntering = animate && escaping && introState === 2;
+  const escapeShown = escaping && introState >= 3;
+  const escapeEntering = animate && escaping && introState === 3;
   const protectShown = !escaping && introState >= 4;
   const protectEntering = animate && !escaping && introState === 4;
 
-  // Une fois la portion imposée couverte de rouge (bancaire, état 3) ou
-  // le bouclier posé (assurance vie, état 5, après — pas à la place),
-  // ce qui reste de gris passe au vert au clic suivant — jamais imposé,
-  // donc jamais rouge, mais on le montre explicitement plutôt que de
-  // laisser le gris tel quel jusqu'à la fin.
-  const greenAt = escaping ? 3 : 5;
+  // Bancaire : le gris passe au vert dès l'état 3 (avant que le rouge
+  // ne vienne en recouvrir une partie à l'état 4, voir escapeShown plus
+  // haut) — le vert reste alors visible seulement sur le KEPT_H non
+  // recouvert par le rouge, le reste est de toute façon caché dessous.
+  // Assurance vie : le bouclier posé (état 5) précède le passage au
+  // vert (état 6, greenAt=5) — jamais imposé, donc jamais rouge, mais on
+  // le montre explicitement plutôt que de laisser le gris tel quel
+  // jusqu'à la fin.
+  const greenAt = escaping ? 2 : 5;
   const greenShown = introState >= greenAt;
   const greenEntering = animate && introState === greenAt;
 
@@ -291,10 +301,10 @@ function chiffresRender(slide, chiffresState, animate) {
     animateNow: stage2 ? false : animate,
   });
 
-  // Entrée du bloc (état 10, arrivée sur ce graphique après les deux
-  // clics d'hypothèse seule, états 8-9) : un fondu sur l'ensemble, pas
-  // un remplacement sec — les cuves n'existent pas du tout dans le DOM
-  // avant cet état.
+  // Entrée du bloc (état 9, arrivée sur ce graphique après l'hypothèse
+  // seule puis son clic de pause, états 7-8) : un fondu sur l'ensemble,
+  // pas un remplacement sec — les cuves n'existent pas du tout dans le
+  // DOM avant cet état.
   const gridEntering = animate && stage === 0;
 
   return `
@@ -305,30 +315,28 @@ function chiffresRender(slide, chiffresState, animate) {
   `;
 }
 
-// États 1-6 : mécanisme (sans l'hypothèse, voir showHyp). État 7 : clic
-// de pause, le mécanisme reste figé sur son dernier visuel, rien
-// n'apparaît encore. État 8 : l'hypothèse apparaît SEULE (les cuves du
-// graphique n'existent pas encore). État 9 : second clic de pause — la
-// phrase d'hypothèse reste seule à l'écran, les cuves n'existent
-// toujours pas dans le DOM (remonté : elles apparaissaient un cran trop
-// tôt). États 10-12 : le graphique chiffré (voir chiffresRender) —
-// remplissage en deux temps puis écart final.
+// États 1-6 : mécanisme (sans l'hypothèse, voir showHyp) — pas de clic
+// de pause à la fin : l'état 6 mène directement à l'état 7. État 7 :
+// l'hypothèse apparaît SEULE (les cuves du graphique n'existent pas
+// encore). État 8 : clic de pause — la phrase d'hypothèse reste seule à
+// l'écran, les cuves n'existent toujours pas dans le DOM (remonté :
+// elles apparaissaient un cran trop tôt). États 9-11 : le graphique
+// chiffré (voir chiffresRender) — remplissage en deux temps puis écart
+// final.
 export function render(slide, opts = {}) {
-  const stateIndex = Math.min(Math.max(opts.stateIndex ?? 0, 0), 11);
+  const stateIndex = Math.min(Math.max(opts.stateIndex ?? 0, 0), 10);
   const animate = !!opts.animate;
 
-  const showHyp = stateIndex >= 7;
-  const hypEntering = animate && stateIndex === 7;
+  const showHyp = stateIndex >= 6;
+  const hypEntering = animate && stateIndex === 6;
 
   let body;
-  if (stateIndex <= 6) {
-    const introState = Math.min(stateIndex, 5);
-    const introAnimate = animate && stateIndex <= 5; // le clic de pause (état 7) ne rejoue pas le mécanisme
-    body = introRender(slide, introState, introAnimate);
-  } else if (stateIndex <= 8) {
-    body = ""; // l'hypothèse seule, rien d'autre à l'écran (états 8 et 9)
+  if (stateIndex <= 5) {
+    body = introRender(slide, stateIndex, animate);
+  } else if (stateIndex <= 7) {
+    body = ""; // l'hypothèse seule, rien d'autre à l'écran (états 7 et 8)
   } else {
-    body = chiffresRender(slide, stateIndex - 9, animate);
+    body = chiffresRender(slide, stateIndex - 8, animate);
   }
 
   const leadCls = "impact-fiscal__lead" + (showHyp ? "" : " impact-fiscal__lead--invisible") + (hypEntering ? " is-entering" : "");

@@ -252,42 +252,17 @@
       "bancaire": 103200,
       "ecart": 45000,
       "states": [
-        {
-          "label": "Mécanisme : capital"
-        },
-        {
-          "label": "Mécanisme : gains"
-        },
-        {
-          "label": "Mécanisme : fuite bancaire"
-        },
-        {
-          "label": "Mécanisme : reste non imposé (bancaire)"
-        },
-        {
-          "label": "Mécanisme : protection assurance vie"
-        },
-        {
-          "label": "Mécanisme : reste non imposé (assurance vie)"
-        },
-        {
-          "label": "Mécanisme (pause)"
-        },
-        {
-          "label": "Hypothèse"
-        },
-        {
-          "label": "Hypothèse (pause)"
-        },
-        {
-          "label": "Capital versé"
-        },
-        {
-          "label": "Avant impôt"
-        },
-        {
-          "label": "Après impôt"
-        }
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
       ]
     },
     {
