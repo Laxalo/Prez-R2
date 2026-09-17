@@ -22,7 +22,7 @@
     {
       "id": "cover",
       "type": "cover",
-      "kicker": "Prénom Nom — 2ᵉ rendez-vous",
+      "kicker": "Prénom Nom",
       "title": "Accompagnement patrimonial"
     },
     {
@@ -568,12 +568,110 @@
       ]
     },
     {
+      "id": "scpi-selection",
+      "type": "deux-poches",
+      "chapitreActif": 2,
+      "titre": "Une allocation diversifiée et internationale",
+      "colonnes": [
+        {
+          "nom": "SCPI diversifiées",
+          "couleur": "ink",
+          "items": [
+            {
+              "icon": "coche",
+              "texte": "Une sélection rigoureuse des meilleures signatures du marché"
+            },
+            {
+              "icon": "formes",
+              "texte": "Diversification sectorielle et géographique"
+            }
+          ]
+        },
+        {
+          "nom": "Investir à l'international",
+          "couleur": "bleu",
+          "items": [
+            {
+              "icon": "globe",
+              "texte": "SCPI françaises qui détiennent du parc immobilier en Europe"
+            },
+            {
+              "icon": "economie-impot",
+              "texte": "Fiscalité optimisée sur les revenus perçus à l'étranger"
+            }
+          ]
+        }
+      ],
+      "states": [
+        {},
+        {},
+        {}
+      ]
+    },
+    {
       "id": "scpi-cadence",
       "type": "scpi-cadence",
       "chapitreActif": 2,
       "titre": "Les points clés",
       "states": [
         {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "financement-fiscalite",
+      "type": "financement-fiscalite",
+      "chapitreActif": 2,
+      "titre": "Comment se constituer du patrimoine immobilier ?",
+      "tmi": 30,
+      "ps": 17.2,
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "financement-duree",
+      "type": "financement-duree",
+      "chapitreActif": 2,
+      "titre": "Comment se constituer du patrimoine immobilier ?",
+      "montantExemple": 100000,
+      "mensualiteCourte": 665,
+      "dureeCourteAnnees": 15,
+      "mensualiteLongue": 475,
+      "dureeLongueAnnees": 25,
+      "anneeDeces": 12,
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "financement-synthese",
+      "type": "financement-synthese",
+      "chapitreActif": 2,
+      "titre": "Comment se constituer du patrimoine immobilier ?",
+      "montantExemple": 100000,
+      "tmi": 30,
+      "ps": 17.2,
+      "states": [
         {},
         {}
       ]
@@ -608,6 +706,32 @@
         {},
         {}
       ]
+    },
+    {
+      "id": "scpi-financement-2",
+      "type": "scpi-financement",
+      "chapitreActif": 2,
+      "titre": "Investir en financement",
+      "sousTitre": "L'effet de levier décuple le patrimoine immobilier constitué, pour un même effort d'épargne",
+      "capitalCible": 105000,
+      "patrimoineReinvesti": 71500,
+      "dureeAnnees": 20,
+      "financementMensuel": 670,
+      "revenuMensuel": 450,
+      "revenuMensuelViager": 464,
+      "tauxDistribution": "5,3 %",
+      "tauxFinancement": "5 %",
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "assuranceEmprunteur": "0,15 %/an"
     },
     {
       "id": "per-titre",
@@ -742,8 +866,7 @@
         "Transmission"
       ],
       "railActive": 1,
-      "titre": "Le plan d'investissement",
-      "sousTitre": "Constitution de votre capital retraite",
+      "titre": "Constitution d'un capital retraite",
       "versementMensuel": 300,
       "tmiPct": 30,
       "dureeAnnees": 20,
@@ -753,8 +876,96 @@
         {},
         {},
         {},
+        {},
+        {},
+        {},
+        {},
+        {},
         {}
       ]
+    },
+    {
+      "id": "per-exemples-2026",
+      "type": "per-exemples",
+      "masqueeParDefaut": true,
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "titre": "Exemples chiffrés TNS",
+      "tableaux": [
+        {
+          "colonnes": [
+            {
+              "label": "Versement 2026",
+              "valeur": "0 €",
+              "accent": "or"
+            },
+            {
+              "label": "Revenu Imposable Estimé",
+              "valeur": "200 000 €"
+            },
+            {
+              "label": "Impôt estimé en 2027",
+              "valeur": "66 523 €",
+              "shade": true,
+              "encadreBleu": true,
+              "noteDroite": "Diminuable grâce au PACS, via le passage à 2 parts fiscales",
+              "encadreOrdre": 2
+            }
+          ]
+        },
+        {
+          "colonnes": [
+            {
+              "label": "Versement 2026",
+              "note": "10% revenus 2026 + rattrapage plafond 2025",
+              "valeur": "24 710 €",
+              "accent": "or",
+              "encadreBleu": true,
+              "noteBas": "Augmentable grâce au PACS, via la mutualisation des plafonds",
+              "encadreOrdre": 1
+            },
+            {
+              "label": "Revenu Net fiscal Estimé en 2026",
+              "valeur": "175 290 €"
+            },
+            {
+              "label": "Impôt estimé en 2027",
+              "valeur": "55 669 €",
+              "accent": "bleu",
+              "shade": true
+            },
+            {
+              "label": "Gain Fiscal en 2027",
+              "valeur": "10 854 €",
+              "accent": "vert",
+              "gold": true
+            }
+          ]
+        }
+      ],
+      "notePied": "Illustration non contractuelle, à partir de données fournies par le simulateur.",
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "resultat": {
+        "label": "Rentabilité instantanée",
+        "valeur": "+45 %"
+      }
     },
     {
       "id": "per-exemples",
@@ -839,8 +1050,64 @@
       }
     },
     {
+      "id": "per-plafond-2026",
+      "type": "atouts",
+      "chapitreActif": 2,
+      "railEtapes": [
+        "Retraite",
+        "Impôts",
+        "Prévoyance",
+        "Transmission"
+      ],
+      "railActive": 2,
+      "titre": "En pratique, le plafond de déduction",
+      "atouts": [
+        {
+          "numero": "01",
+          "icon": "plafond",
+          "label": "Le plafond annuel pour 2026",
+          "bullets": [
+            "Montant déductible : 10 % des revenus 2025",
+            "Minimum : 4 710 €, même en l'absence de revenus suffisants (10 % du PASS 2026)",
+            "Maximum : 37 680 € (10 % de 8 PASS 2026)"
+          ]
+        },
+        {
+          "numero": "02",
+          "icon": "cycle",
+          "label": "Le rattrapage",
+          "bullets": [
+            "Les plafonds non utilisés se cumulent sur les 5 dernières années"
+          ],
+          "image": "assets/per-deduction-fiscale-exemple-plafond-retraite.png",
+          "imageAlt": "Exemple de plafond de déduction retraite non utilisé, cumulé sur 5 ans"
+        },
+        {
+          "numero": "03",
+          "icon": "couple",
+          "label": "La mutualisation",
+          "bullets": [
+            "Un conjoint ou partenaire de Pacs peut utiliser le plafond disponible de l'autre",
+            "Une optimisation à l'échelle du foyer fiscal"
+          ]
+        }
+      ],
+      "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
       "id": "per-plafond",
       "type": "atouts",
+      "masqueeParDefaut": true,
       "chapitreActif": 2,
       "railEtapes": [
         "Retraite",
@@ -867,7 +1134,9 @@
           "label": "Le rattrapage",
           "bullets": [
             "Les plafonds non utilisés se cumulent sur les 5 dernières années"
-          ]
+          ],
+          "image": "assets/per-deduction-fiscale-exemple-plafond-retraite.png",
+          "imageAlt": "Exemple de plafond de déduction retraite non utilisé, cumulé sur 5 ans"
         },
         {
           "numero": "03",
@@ -1011,9 +1280,27 @@
       ],
       "aTerme": {
         "label": "À terme",
-        "texte": "Optimisation de votre fiscalité, aux côtés d'une épargne de précaution préservée."
+        "ligne": true,
+        "bullets": [
+          {
+            "texte": "Optimisation de votre fiscalité"
+          },
+          {
+            "texte": "Épargne de précaution préservée"
+          }
+        ]
       },
       "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
         {},
         {},
         {},
@@ -1059,9 +1346,23 @@
       ],
       "aTerme": {
         "label": "À terme",
-        "texte": "Optimisation de votre fiscalité, aux côtés d'une épargne de précaution préservée."
+        "ligne": true,
+        "bullets": [
+          {
+            "texte": "Optimisation de votre fiscalité"
+          },
+          {
+            "texte": "Épargne de précaution préservée"
+          }
+        ]
       },
       "states": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
         {},
         {},
         {},

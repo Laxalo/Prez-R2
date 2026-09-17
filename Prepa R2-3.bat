@@ -68,6 +68,8 @@ if "%MODE%"=="2" (
     echo de data/clients/_demo.json, personnalisee avec mes reponses^) -
     echo uniquement ce fichier, ne touche a aucun autre fichier du projet.
     echo Applique les regles imperatives de CLAUDE.md sans me les redemander.
+    echo Une fois le fichier ecrit, lance "Template slides.bat" %CLIENT%
+    echo pour ouvrir automatiquement la presentation.
   ) > "%PROMPT_FILE%"
 ) else (
   if not exist "data\clients\%CLIENT%.json" (
@@ -92,7 +94,9 @@ if "%MODE%"=="2" (
     echo reponses^) avant de l'ecrire - je valide ou je corrige.
     echo.
     echo Ne modifie ni les questions[] de cloture-reflexion, ni aucun autre
-    echo fichier du projet.
+    echo fichier du projet. Une fois le fichier mis a jour, lance
+    echo "Template slides.bat" %CLIENT% pour ouvrir automatiquement la
+    echo presentation.
   ) > "%PROMPT_FILE%"
 )
 
@@ -108,6 +112,6 @@ if "%MODE%"=="2" (
   REM R2 : personnalisation complete - on garde le modele par defaut.
   claude
 ) else (
-  REM R3 : tache mecanique - modele moins cher, effort reduit.
-  claude --model haiku --effort low
+  REM R3 : tache mecanique - Sonnet effort reduit (Haiku trop imprecis).
+  claude --model sonnet --effort low
 )

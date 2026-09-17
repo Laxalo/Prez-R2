@@ -16,9 +16,11 @@ import { renderChapRail } from "./_chapitre.js";
 //   5. l'effet de levier (gain en euros et en %), toujours dérivé des
 //      montants ci-dessus, jamais saisi en dur ;
 //   6. les revenus SCPI se poursuivent à vie une fois le financement
-//      soldé — même montant (v.revM) qu'aux états 2-3, mais calculé sur
-//      les 85 000 € de patrimoine désormais détenus en pleine propriété,
-//      plus sur l'effort de 40 500 € qui n'a plus cours.
+//      soldé — par défaut le même montant (v.revM) qu'aux états 2-3, ou
+//      un montant viager distinct fourni par le simulateur
+//      (slide.revenuMensuelViager), calculé sur le patrimoine désormais
+//      détenu en pleine propriété plutôt que sur l'effort qui n'a plus
+//      cours.
 //
 // Colonne "mensualité" (état 1, pleine hauteur) : effort d'épargne net
 // (encre) qui se rétracte, revenus SCPI (or) qui montent depuis le bas
@@ -88,6 +90,14 @@ const STATE_COUNT = 8;
 function values(slide) {
   const financementMensuel = slide.financementMensuel;
   const revenuMensuel = slide.revenuMensuel;
+  // Revenu SCPI "à vie" (état 8, une fois le financement soldé) : par
+  // défaut identique à revenuMensuel (même montant qu'aux états 2-3,
+  // simplification du gabarit d'origine — voir en-tête de fichier), mais
+  // certains clients ont un revenu viager distinct fourni par le
+  // simulateur (assiette différente une fois le crédit soldé) — champ
+  // optionnel slide.revenuMensuelViager, jamais recalculé ici (Règle 4,
+  // CLAUDE.md).
+  const revenuMensuelViager = slide.revenuMensuelViager ?? revenuMensuel;
   const effort = financementMensuel - revenuMensuel;
   const duree = slide.dureeAnnees;
   const effortTotal = effort * duree * 12;
@@ -111,6 +121,7 @@ function values(slide) {
     capital: euro.format(capitalCible),
     finM: `${euro.format(financementMensuel)}/mois`,
     revM: `${euro.format(revenuMensuel)}/mois`,
+    revViagerM: `${euro.format(revenuMensuelViager)}/mois`,
     effM: `${euro.format(effort)}/mois`,
     effortTotal: euro.format(effortTotal),
     patrimoineReinvesti: euro.format(patrimoineReinvesti),
@@ -296,11 +307,24 @@ export function render(slide, opts = {}) {
     ? `<span class="scpi-financement__levier-bar-value${goldEntering ? " is-entering" : ""}"${goldEntering ? " data-reveal" : ""}>${v.capital}</span>`
     : "";
 
+  // La double flèche n'illustre QUE l'écart entre le patrimoine reconstitué
+  // par réinvestissement des loyers (reinvestiBarH, le sommet réel de la
+  // colonne "Sans financement") et le patrimoine avec financement
+  // (patrimoineBarH) — pas tout l'écart doré visuel, qui descend plus bas
+  // jusqu'à l'effort d'épargne réel (effortBarH) pour rester cohérent avec
+  // la coloration de la colonne. Sans ce recalage, la flèche paraissait
+  // plus grande que la valeur qu'elle annote (+27 305 €, déjà
+  // capitalCible - patrimoineReinvesti — correcte, seul son tracé était
+  // trop long). bottom/height posés en style inline plutôt que par la
+  // hauteur du parent (voir gapStyle plus bas, qui suit un autre repère).
   const showAnnotation = showGold;
   const annotationEntering = goldEntering;
+  const annotationBottomH = reinvestiBarH;
+  const annotationHeightH = Math.max(patrimoineBarH - reinvestiBarH, 0);
+  const annotationStyle = `bottom:${annotationBottomH}cqw;height:${annotationHeightH}cqw`;
   const annotationHtml = showAnnotation
     ? `
-      <div class="scpi-financement__levier-annotation${annotationEntering ? " is-entering" : ""}"${annotationEntering ? " data-reveal" : ""}>
+      <div class="scpi-financement__levier-annotation${annotationEntering ? " is-entering" : ""}"${annotationEntering ? " data-reveal" : ""} style="${annotationStyle}">
         <span class="scpi-financement__levier-arrow">
           <span class="scpi-financement__levier-arrow-head scpi-financement__levier-arrow-head--up"></span>
           <span class="scpi-financement__levier-arrow-line"></span>
@@ -325,16 +349,14 @@ export function render(slide, opts = {}) {
   // .scpi-financement__levier-bar--patrimoine). .scpi-financement__
   // levier-bar-gap (top:0, hauteur posée en style inline) occupe le HAUT
   // de la colonne, le bleu du fond reste visible en dessous jusqu'à
-  // effortBarH.
+  // effortBarH. La flèche (annotationHtml) n'est PLUS un enfant de ce
+  // bloc (elle a son propre repère bottom/height, voir plus haut) : elle
+  // est rendue à côté, directement dans la barre "Avec financement".
   const goldGapFinalH = patrimoineBarH - effortBarH;
   const gapAttrs = goldEntering ? ` data-reveal data-reveal-height="${goldGapFinalH}cqw"` : "";
   const gapStyle = `height:${goldEntering ? 0 : goldGapFinalH}cqw`;
   const gapHtml = showGold
-    ? `
-      <div class="scpi-financement__levier-bar-gap"${gapAttrs} style="${gapStyle}">
-        ${annotationHtml}
-      </div>
-    `
+    ? `<div class="scpi-financement__levier-bar-gap"${gapAttrs} style="${gapStyle}"></div>`
     : "";
 
   // Ligne pointillée : démarcation entre l'effort d'épargne réel
@@ -346,6 +368,31 @@ export function render(slide, opts = {}) {
   // colonnes plutôt que de suivre leur animation.
   const markerHtml = showLevier ? `<span class="scpi-financement__levier-bar-marker" style="bottom:${effortBarH}cqw"></span>` : "";
 
+  // Montant explicite au niveau du repère (52 800 €, v.effortTotal —
+  // déjà dérivé ci-dessus, jamais saisi en dur) : même traitement que
+  // les montants au sommet des colonnes (scpi-financement__levier-bar-
+  // value), mais ancré à une hauteur FIXE (effortBarH, dans le
+  // référentiel du wrap) plutôt qu'au sommet — animé — de la barre.
+  // N'apparaît QU'à l'état 5 (stateIndex 4, les deux colonnes tout juste
+  // montées à effortBarH, rien au-dessus encore) — dès l'état 6, les
+  // colonnes divergent et ce montant n'a plus lieu d'être affiché (il ne
+  // légende plus un sommet de colonne). Dupliqué sur les deux colonnes,
+  // comme le repère lui-même (markerHtml) : même effort réel des deux
+  // côtés.
+  const showMarkerValue = stateIndex === 4;
+  const markerValueHtml = showMarkerValue
+    ? `<span class="scpi-financement__levier-marker-value" style="bottom:${effortBarH}cqw">${v.effortTotal}</span>`
+    : "";
+
+  // slide.masquerLabelReinvesti (optionnel, défaut false) : masque ce
+  // seul repère d'ordonnée, pour un client dont le "patrimoine reconstitué
+  // par réinvestissement des loyers" (slide.patrimoineReinvesti) prête à
+  // confusion une fois affiché (ex. valeur très proche de l'effort réel).
+  // La colonne "Sans financement" et son montant restent inchangés, seul
+  // ce libellé disparaît. Gaté aussi par showLeftGrown (état 6+) : à
+  // l'état 5, les deux colonnes sont encore à hauteur d'effort (52 800 €,
+  // voir markerValueHtml) — ce repère n'a de sens qu'une fois la colonne
+  // "Sans financement" effectivement montée à reinvestiBarH.
   const levierHtml = showLevier
     ? `
       <div class="scpi-financement__levier${levierEntering ? " is-entering" : ""}"${levierEntering ? " data-reveal" : ""} style="left:${LEVIER_LEFT}cqw">
@@ -353,7 +400,11 @@ export function render(slide, opts = {}) {
         <div class="scpi-financement__levier-row">
           <div class="scpi-financement__levier-axis" style="height:${LEVIER_BAR_MAX_CQW}cqw">
             ${goldAxisLabel}
-            <span class="scpi-financement__levier-axis-label scpi-financement__levier-axis-label--desc scpi-financement__levier-axis-label--bleu" style="bottom:${reinvestiBarH}cqw">Patrimoine immobilier constitué<br>par réinvestissement des loyers</span>
+            ${
+              slide.masquerLabelReinvesti || !showLeftGrown
+                ? ""
+                : `<span class="scpi-financement__levier-axis-label scpi-financement__levier-axis-label--desc scpi-financement__levier-axis-label--bleu" style="bottom:${reinvestiBarH}cqw">Patrimoine immobilier constitué<br>par réinvestissement des loyers</span>`
+            }
             <span class="scpi-financement__levier-axis-label scpi-financement__levier-axis-label--desc scpi-financement__levier-axis-label--bleu" style="bottom:${effortBarH}cqw">Effort d'épargne réel</span>
             <span class="scpi-financement__levier-axis-label" style="bottom:0">0 €</span>
           </div>
@@ -364,6 +415,7 @@ export function render(slide, opts = {}) {
                   ${leftValue}
                 </div>
                 ${markerHtml}
+                ${markerValueHtml}
               </div>
               <span class="scpi-financement__levier-caption">Sans financement</span>
             </div>
@@ -372,8 +424,10 @@ export function render(slide, opts = {}) {
                 <div class="scpi-financement__levier-bar scpi-financement__levier-bar--patrimoine"${patrimoineBarAttrs} style="${patrimoineBarStyle}">
                   ${goldValue}
                   ${gapHtml}
+                  ${annotationHtml}
                 </div>
                 ${markerHtml}
+                ${markerValueHtml}
               </div>
               <span class="scpi-financement__levier-caption">Avec financement</span>
             </div>
@@ -398,13 +452,35 @@ export function render(slide, opts = {}) {
   // du diagramme de levier (bleu état 5, doré état 6, annotation état
   // 7) : une conclusion propre, pas accrochée au dernier temps du
   // graphe.
+  // "Fiscalité avant réinvestissement prise en compte" : n'a de sens que
+  // si l'hypothèse "Sans financement" modélise justement ce
+  // réinvestissement des loyers (voir goldAxisLabel/masquerLabelReinvesti
+  // plus haut) — sans quoi cette précision fiscale n'a plus d'objet et
+  // induirait en erreur.
+  const footnoteFiscalite = slide.masquerLabelReinvesti
+    ? "données brutes de fiscalité et de prélèvements sociaux."
+    : "données brutes de fiscalité et de prélèvements sociaux · fiscalité avant réinvestissement prise en compte (TMI 30 % + PS 17,2 %).";
+
+  // Ligne "taux de financement" de la note de bas de slide : par défaut,
+  // v.tf porte déjà tout le taux affiché (ex. "5,85 %"), suivi du
+  // suffixe fixe "assurance incluse" puis de la précision de durée
+  // moyenne — comportement historique, inchangé pour les clients déjà
+  // créés. Certains clients préfèrent isoler le taux d'assurance
+  // emprunteur en hypothèse à part (slide.assuranceEmprunteur,
+  // optionnel) : la phrase se simplifie alors (plus de suffixe
+  // "assurance incluse" ni de précision de durée moyenne, redondante
+  // avec les repères déjà affichés sur l'axe).
+  const tauxFinancementLigne = slide.assuranceEmprunteur
+    ? `taux de financement ${escapeHtml(v.tf)}/an · assurance emprunteur ${escapeHtml(slide.assuranceEmprunteur)}`
+    : `taux de financement ${escapeHtml(v.tf)} assurance incluse · montants moyens sur les ${v.duree} premières années`;
+
   const showViager = stateIndex >= 7;
   const viagerEntering = animate && stateIndex === 7;
   const viagerHtml = showViager
     ? `
       <div class="scpi-financement__viager${viagerEntering ? " is-entering" : ""}"${viagerEntering ? " data-reveal" : ""} style="left:${AXIS_END_CQW + 1.5}cqw">
         <span class="scpi-financement__viager-kicker">Puis, à vie</span>
-        <span class="scpi-financement__viager-value">${v.revM}</span>
+        <span class="scpi-financement__viager-value">${v.revViagerM}</span>
         <p class="scpi-financement__viager-note">Les loyers continuent d'être versés, base ${v.capital}</p>
       </div>
     `
@@ -450,7 +526,7 @@ export function render(slide, opts = {}) {
         ${viagerHtml}
       </div>
 
-      <p class="scpi-financement__footnote">Hypothèses · taux de distribution SCPI ${escapeHtml(v.td)}/an hors revalorisation · taux de financement ${escapeHtml(v.tf)} assurance incluse · montants moyens sur les ${v.duree} premières années · données brutes de fiscalité et de prélèvements sociaux · fiscalité avant réinvestissement prise en compte (TMI 30 % + PS 17,2 %).</p>
+      <p class="scpi-financement__footnote">Hypothèses · taux de distribution SCPI ${escapeHtml(v.td)}/an hors revalorisation · ${tauxFinancementLigne} · ${footnoteFiscalite}</p>
     </div>
   `;
 }

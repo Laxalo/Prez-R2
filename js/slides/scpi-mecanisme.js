@@ -130,6 +130,25 @@ function boxHtml({ left, top, width, height, cls, icon, pngIcon, pngHeight, titr
   `;
 }
 
+// Camembert repris de "Percevoir des revenus optimisés" (état
+// coin-bleu de fiscalite-rachats.js — même géométrie, secteur de 70°
+// détaché sur sa bissectrice à -45°) posé ici en simple badge décoratif,
+// sans animation ni code couleur fiscal : la part majoritaire en encre,
+// la part détachée en or — pas la peine de distinguer capital/gains
+// comme sur la slide d'origine, ce badge n'illustre qu'un "camembert
+// avec une part qui sort du lot", pas une notion fiscale précise.
+const BADGE_MAJORITY = `<path d="M 100 100 L 151.21 90.97 A 52 52 0 1 1 109.03 48.79 Z" fill="rgb(var(--chap-ink-rgb))"/>`;
+const BADGE_COIN = `<path d="M 100 100 L 109.03 48.79 A 52 52 0 0 1 151.21 90.97 Z" fill="var(--or)" transform="translate(9.9,-9.9)"/>`;
+function pieBadgeHtml(left, top, size, entering) {
+  const cls = "scpi-mecanisme__badge" + (entering ? " is-entering" : "");
+  return `
+    <svg class="${cls}"${entering ? " data-reveal" : ""} viewBox="0 0 200 200" style="left:${left}cqw;top:${top}cqw;width:${size}cqw;height:${size}cqw" aria-hidden="true">
+      ${BADGE_MAJORITY}
+      ${BADGE_COIN}
+    </svg>
+  `;
+}
+
 function flowLabelHtml(left, top, width, texte, accent, entering) {
   const cls = "scpi-mecanisme__flow" + (accent ? ` scpi-mecanisme__flow--${accent}` : "") + (entering ? " is-entering" : "");
   return `<div class="${cls}"${entering ? " data-reveal" : ""} style="left:${left}cqw;top:${top}cqw;width:${width}cqw">${escapeHtml(texte)}</div>`;
@@ -147,7 +166,13 @@ function lineGroupHtml(entering, markup) {
 // le <svg> du render) : 1cqw = 12.8px, même échelle que le reste du
 // fichier.
 const CQW_PX = 12.8;
-const INVESTISSEUR_LEFT = 0;
+// Décalée à gauche (au lieu de 0, flush avec le bord de la scène) pour
+// que le cercle "Associé" se retrouve aussi proche du bord gauche de la
+// slide que la case "Société de gestion" l'est du bord droit — les
+// flèches "Copropriétaire"/"Distribution de revenus" (calées sur
+// INVESTISSEUR_LEFT+INVESTISSEUR_WIDTH, plus bas) s'allongent
+// mécaniquement d'autant, la case SCPI ne bougeant pas.
+const INVESTISSEUR_LEFT = -6;
 const INVESTISSEUR_WIDTH = 21.25;
 const SCPI_LEFT = 36.875;
 const SCPI_WIDTH = 16.5625;
@@ -191,6 +216,16 @@ const CENTER_BOX_HEIGHT_CQW = 12.1875 + BOX_TOP_SHIFT_CQW;
 // titre<->icônes (gap de .scpi-mecanisme__box + padding-top de .scpi-
 // mecanisme__actifs), seulement au surplus au-dessus/en dessous du bloc.
 const SCPI_HEIGHT_CQW = 13.75;
+
+// Badge camembert (voir pieBadgeHtml) : centré (son propre centre, pas
+// un bord) sur l'angle haut-gauche de la case SCPI — moitié dehors,
+// moitié dedans, sans chevaucher le titre "SCPI". Remonté d'un cran
+// (BADGE_LIFT_CQW) par rapport au centrage strict sur le bord, pour
+// laisser un peu moins de camembert retomber dans la case.
+const BADGE_SIZE_CQW = 10.5;
+const BADGE_LIFT_CQW = 1.25;
+const BADGE_LEFT_CQW = SCPI_LEFT - BADGE_SIZE_CQW / 2;
+const BADGE_TOP_CQW = BOX_TOP_CQW - BADGE_SIZE_CQW / 2 - BADGE_LIFT_CQW;
 const BOX_TOP_PX = BOX_TOP_CQW * CQW_PX;
 
 // Un pictogramme + libellé par flèche (voir arrowAnnotationHtml) :
@@ -425,19 +460,26 @@ export function render(slide, opts = {}) {
       })
     : "";
 
-  // Largeur réduite au strict nécessaire pour "Autorité des marchés
-  // financiers" (plus long que "AMF" + pictogramme) — l'ancienne
-  // largeur (23,4375cqw) laissait ~21px de vide après le texte. Centrée
-  // sur le même axe que la case SCPI (45,15625cqw, milieu de la scène),
-  // pas sur une valeur saisie à part qui s'en désynchroniserait si la
-  // scène changeait de largeur.
-  const AMF_WIDTH = 18.75;
+  // Largeur ajustée pour "Autorité des marchés financiers" (plus long
+  // que "AMF" + pictogramme) — 18,75cqw (valeur précédente, resserrée au
+  // strict nécessaire) laissait 0px de marge : le texte touchait tout
+  // juste une seule ligne, sans aucune tolérance de rendu (police/
+  // moteur). 21cqw garde une vraie marge, sans revenir à l'ancienne
+  // largeur de 23,4375cqw (qui laissait ~21px de vide visible après le
+  // texte). Centrée sur le même axe que la case SCPI (45,15625cqw,
+  // milieu de la scène), pas sur une valeur saisie à part qui s'en
+  // désynchroniserait si la scène changeait de largeur.
+  const AMF_WIDTH = 21;
+  // top légèrement négatif : depuis que la case a grandi (height:6.25cqw,
+  // ci-dessous), son bas touchait le départ du pointillé vertical
+  // (amfLines, "M578,72" plus bas) — remontée d'1cqw pour laisser un
+  // espace visible entre la case et le pointillé.
   const amfBox = showAmf
     ? boxHtml({
         left: STAGE_CENTER - AMF_WIDTH / 2,
-        top: 0,
+        top: -1,
         width: AMF_WIDTH,
-        height: 5.625,
+        height: 6.25,
         cls: "scpi-mecanisme__box--amf",
         icon: "bouclier",
         titre: "AMF",
@@ -446,12 +488,16 @@ export function render(slide, opts = {}) {
       })
     : "";
 
-  // Pictogramme client (assets/icons/agrément.png, déjà détouré — pas de
-  // retrait de fond à faire dessus, contrairement à société de
-  // gestion.png) accolé au repère, pas dans la case AMF elle-même : il
-  // annote la LIAISON (agrément + contrôle), pas l'autorité.
+  // Pictogramme client (assets/icons/agrément.png, fond blanc détouré à
+  // la retouche) accolé au repère, pas dans la case AMF elle-même : il
+  // annote la LIAISON (agrément + contrôle), pas l'autorité. Posé
+  // au-dessus de la ligne pointillée horizontale (y=112px, voir amfLines
+  // plus bas = 112/CQW_PX = 8.75cqw) plutôt que dessus : top choisi pour
+  // que le bas du bloc (top + hauteur icône, actuellement 3.125cqw)
+  // reste au-dessus de cette ligne, jamais recalculé si l'icône change à
+  // nouveau de taille sans repasser par ce commentaire.
   const amfNote = showAmf
-    ? `<span class="scpi-mecanisme__amf-note${amfEntering ? " is-entering" : ""}"${amfEntering ? " data-reveal" : ""} style="left:46.25cqw;top:6.5625cqw"><img class="scpi-mecanisme__amf-note-icon" src="assets/icons/${encodeURIComponent(
+    ? `<span class="scpi-mecanisme__amf-note${amfEntering ? " is-entering" : ""}"${amfEntering ? " data-reveal" : ""} style="left:46.25cqw;top:5.3125cqw"><img class="scpi-mecanisme__amf-note-icon" src="assets/icons/${encodeURIComponent(
         "agrément.png"
       )}" alt="" />Agrément et contrôle</span>`
     : "";
@@ -568,6 +614,7 @@ export function render(slide, opts = {}) {
 
         ${investisseurSlot}
         ${scpiBox}
+        ${showCopro ? pieBadgeHtml(BADGE_LEFT_CQW, BADGE_TOP_CQW, BADGE_SIZE_CQW, coproEntering) : ""}
         ${gestionBox}
 
         ${souscriptionHtml}

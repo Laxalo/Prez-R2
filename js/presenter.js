@@ -430,6 +430,13 @@ async function init() {
   deck = await loadDeck();
   pristineById = new Map(deck.slides.map((s) => [s.id, cloneDeep(s)]));
 
+  // Slides masquées par défaut (slide.masqueeParDefaut dans le JSON
+  // client) : même mécanisme que le bouton "Masquer", juste pré-armé au
+  // chargement — le présentateur peut toujours les réafficher en RDV.
+  deck.slides.forEach((slide) => {
+    if (slide.masqueeParDefaut) hidden.add(slide.id);
+  });
+
   setupKeyboard();
   setupNav();
   setupNotes();

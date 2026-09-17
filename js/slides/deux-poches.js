@@ -24,7 +24,7 @@ function colBody(col) {
   return `
     <div class="deux-poches__head">
       <span class="deux-poches__name">${escapeHtml(col.nom)}</span>
-      <span class="deux-poches__tag" ${tagStyle}>${escapeHtml(col.tag)}</span>
+      ${col.tag ? `<span class="deux-poches__tag" ${tagStyle}>${escapeHtml(col.tag)}</span>` : ""}
     </div>
     ${(col.items || []).map((item) => itemHtml(item, iconColor)).join("")}
   `;
@@ -42,23 +42,27 @@ function colHtml(col, { visible, entering }) {
   return `<div class="${cls}"${entering ? " data-reveal" : ""}>${colBody(col)}</div>`;
 }
 
-// Révélation progressive en 4 états : état 1 = titre seul (arrivée sur
-// la slide, jamais animée) ; état 2 = + Fonds en euros ; état 3 = +
-// Unités de compte ; état 4 = + "En pratique", à la demande, une fois
-// les deux poches déjà visibles (pas group avec la 2e poche). La grille
-// reste à 2 colonnes dès l'état 1 (poches en placeholder vide) pour
-// qu'aucune ne change de position/largeur en cours de route.
+// Révélation progressive : état 1 = titre seul (arrivée sur la slide,
+// jamais animée) ; état 2 = + Fonds en euros ; état 3 = + Unités de
+// compte ; et, seulement si slide.pratique est renseigné, état 4 = +
+// "En pratique", à la demande, une fois les deux poches déjà visibles
+// (pas group avec la 2e poche). Sans pratique (voir scpi-selection),
+// l'état 3 est le dernier. La grille reste à 2 colonnes dès l'état 1
+// (poches en placeholder vide) pour qu'aucune ne change de
+// position/largeur en cours de route.
 export function render(slide, opts = {}) {
   const [gauche, droite] = slide.colonnes || [];
-  const stateIndex = Math.min(Math.max(opts.stateIndex ?? 0, 0), 3);
+  const hasPratique = !!slide.pratique;
+  const maxState = hasPratique ? 3 : 2;
+  const stateIndex = Math.min(Math.max(opts.stateIndex ?? 0, 0), maxState);
   const animate = !!opts.animate;
 
   const showGauche = stateIndex >= 1;
   const gaucheEntering = animate && stateIndex === 1;
   const showDroite = stateIndex >= 2;
   const droiteEntering = animate && stateIndex === 2;
-  const showPratique = stateIndex >= 3;
-  const pratiqueEntering = animate && stateIndex === 3;
+  const showPratique = hasPratique && stateIndex >= 3;
+  const pratiqueEntering = animate && hasPratique && stateIndex === 3;
 
   return `
     <div class="deux-poches">
@@ -75,11 +79,13 @@ export function render(slide, opts = {}) {
         ${colHtml(droite, { visible: showDroite, entering: droiteEntering })}
       </div>
 
+      ${hasPratique ? `
       <div class="deux-poches__practice${showPratique ? "" : " deux-poches__practice--invisible"}${pratiqueEntering ? " is-entering" : ""}"${pratiqueEntering ? " data-reveal" : ""}>
         <span class="deux-poches__practice-label">${escapeHtml(slide.pratique.label)}</span>
         <span class="deux-poches__practice-sep"></span>
         <p class="deux-poches__practice-text">${escapeHtml(slide.pratique.texte)}</p>
       </div>
+      ` : ""}
     </div>
   `;
 }

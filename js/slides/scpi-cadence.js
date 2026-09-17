@@ -12,7 +12,7 @@ const CASES = [
   {
     icon: "sablier",
     kicker: "À la souscription",
-    titre: "6 mois de délai de jouissance",
+    titre: "Délai de jouissance : 6 mois",
   },
   {
     icon: "cycle",

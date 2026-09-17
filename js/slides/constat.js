@@ -21,30 +21,66 @@ const KPI_ACCENT = { or: "var(--or-clair)", bleu: "var(--bleu-clair)" };
 // d'affichage, pour un dégradé cohérent de gauche à droite sur la barre.
 function computeShares(supports) {
   const total = supports.reduce((sum, s) => sum + s.montant, 0);
-  const byMontantDesc = [...supports].sort((a, b) => b.montant - a.montant);
-  const rounded = byMontantDesc.map((s) => Math.round((s.montant / total) * 1000) / 10);
+  // Indexé par position d'origine (pas par nom) : deux supports peuvent
+  // porter le même nom (ex. deux contrats "Assurance-vie") sans se
+  // marcher dessus.
+  const order = supports.map((s, i) => i).sort((a, b) => supports[b].montant - supports[a].montant);
+  const rounded = order.map((i) => Math.round((supports[i].montant / total) * 1000) / 10);
 
   const sumExceptLast = rounded.slice(0, -1).reduce((a, b) => a + b, 0);
   rounded[rounded.length - 1] = Math.round((100 - sumExceptLast) * 10) / 10;
-  const pctByNom = new Map(byMontantDesc.map((s, i) => [s.nom, rounded[i]]));
+  const pctByIndex = new Map(order.map((i, j) => [i, rounded[j]]));
 
   return supports.map((s, i) => ({
     ...s,
-    pct: pctByNom.get(s.nom),
+    pct: pctByIndex.get(i),
     couleur: SUPPORT_PALETTE[i] || SUPPORT_PALETTE[SUPPORT_PALETTE.length - 1],
   }));
 }
 
-function kpiHtml(kpi, { visible, entering }) {
-  if (!visible) return `<div class="constat__kpi--empty"></div>`;
+// Toujours rendu, même avant son état d'apparition (voir --invisible) :
+// un KPI avec différentiel (voir computeKpiDiffs) est plus haut qu'un KPI
+// sans — le rendre en div vide tant qu'il n'est pas visible changeait la
+// hauteur de la ligne (donc la position du bloc, centré via margin-top:
+// auto) à chaque KPI révélé. Même contenu du premier au dernier état,
+// seule l'opacité change — même principe que .cloture-d__row--invisible.
+function kpiHtml(kpi, { visible, entering, diff }) {
   const color = KPI_ACCENT[kpi.accent] || KPI_ACCENT.or;
-  const cls = "constat__kpi" + (entering ? " is-entering" : "");
+  const cls = "constat__kpi" + (!visible ? " constat__kpi--invisible" : "") + (entering ? " is-entering" : "");
   return `
     <div class="${cls}"${entering ? " data-reveal" : ""}>
       <span class="constat__kpi-label" style="color:${color}">${escapeHtml(kpi.label)}</span>
       <span class="constat__kpi-value">${escapeHtml(kpi.valeur)}</span>
+      ${diff ? `<span class="constat__kpi-diff">${escapeHtml(diff)}</span>` : ""}
     </div>
   `;
+}
+
+function parseKpiAmount(valeur) {
+  if (typeof valeur !== "string") return null;
+  const n = Number(valeur.replace(/[^\d,.-]/g, "").replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+}
+
+// Différentiel affiché sous le KPI "réelle" d'une paire souhaitée/réelle
+// (l'un des deux schémas proposés par défaut à l'entretien client, voir
+// CLAUDE.md Q2) — détecté par libellé plutôt que par position, pour ne
+// rien afficher chez les clients dont les 3 KPI n'ont rien à voir avec
+// une épargne de précaution (ex. "Capacité d'endettement"). Silencieux
+// si l'un des deux libellés manque ou si un montant n'est pas parsable.
+function computeKpiDiffs(kpis) {
+  const souhaitee = kpis.find((k) => /souhait/i.test(k.label));
+  const souhaiteeAmount = souhaitee ? parseKpiAmount(souhaitee.valeur) : null;
+  const diffs = new Map();
+  if (souhaiteeAmount === null) return diffs;
+  kpis.forEach((kpi, i) => {
+    if (!/réelle/i.test(kpi.label)) return;
+    const reelAmount = parseKpiAmount(kpi.valeur);
+    if (reelAmount === null) return;
+    const delta = reelAmount - souhaiteeAmount;
+    diffs.set(i, `${delta >= 0 ? "+" : "−"}${euro.format(Math.abs(delta))}`);
+  });
+  return diffs;
 }
 
 // Le repère entre deux KPI n'apparaît qu'une fois le KPI suivant révélé
@@ -136,6 +172,7 @@ export function render(slide, opts = {}) {
   // occupent toujours le même nombre total d'états avant eux (1 +
   // shares.length), seul l'ordre entre les deux s'est inversé.
   const visibleKpiCount = Math.min(Math.max(stateIndex - 1 - shares.length, 0), kpis.length);
+  const kpiDiffs = computeKpiDiffs(kpis);
 
   return `
     <div class="constat">
@@ -152,7 +189,7 @@ export function render(slide, opts = {}) {
             const visible = visibleKpiCount > i;
             const entering = animate && stateIndex === shares.length + 2 + i;
             const rule = i > 0 ? kpiRuleHtml(visibleKpiCount > i) : "";
-            return rule + kpiHtml(kpi, { visible, entering });
+            return rule + kpiHtml(kpi, { visible, entering, diff: kpiDiffs.get(i) });
           })
           .join("")}
       </div>

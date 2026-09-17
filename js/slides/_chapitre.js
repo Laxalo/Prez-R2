@@ -205,13 +205,41 @@ function renderATermeItems(bullets) {
 // classe modificatrice, en miroir de renderATerme() ci-dessous.
 export function isATermeList(aTerme) {
   return !!(
-    (aTerme.bullets && aTerme.bullets.length) ||
-    (aTerme.colonnes && aTerme.colonnes.length)
+    !aTerme.ligne &&
+    ((aTerme.bullets && aTerme.bullets.length) ||
+      (aTerme.colonnes && aTerme.colonnes.length))
   );
+}
+
+// Vrai si le bloc "à terme" doit poser son LABEL à côté de la liste à
+// puces plutôt qu'au-dessus (voir .cloture__aterme--ligne) — variante
+// opt-in (aTerme.ligne: true) qui garde l'esprit "une préco par ligne"
+// (même rendu à puces que le registre par défaut, renderATermeItems) mais
+// gagne la hauteur occupée par le label sur sa propre ligne, en la
+// plaçant en colonne à gauche de la liste.
+export function isATermeLigne(aTerme) {
+  return !!(aTerme.ligne && aTerme.bullets && aTerme.bullets.length);
+}
+
+// Badge "déjà en place" pour une préconisation de cloture-reflexion/
+// cloture-detail (slide.preconisations[].statut = { label, detail }) —
+// affiché à la place du montant/question habituel, sur une seule ligne
+// ("Déjà en place, ≈ 90 €/mois"), en or comme le nom de la préconisation
+// (voir cloture-d__row-nom--statut dans les deux gabarits appelants) :
+// le doré signale d'un coup d'œil, nom ET badge, ce qui a déjà été fait.
+// Le ✓ vient de la CSS (::before sur .cloture-d__row-statut-label), pas
+// du texte lui-même, pour rester réutilisable avec un label personnalisé.
+export function renderStatut(statut) {
+  const label = statut.label || "Déjà en place";
+  const texte = statut.detail ? `${label}, ${statut.detail}` : label;
+  return `<span class="cloture-d__row-statut-label">${escapeHtml(texte)}</span>`;
 }
 
 export function renderATerme(aTerme) {
   if (!aTerme) return "";
+  if (isATermeLigne(aTerme)) {
+    return `<ul class="cloture__aterme-list">${renderATermeItems(aTerme.bullets)}</ul>`;
+  }
   if (aTerme.colonnes && aTerme.colonnes.length) {
     const cols = aTerme.colonnes
       .map((col) => `<ul class="cloture__aterme-list">${renderATermeItems(col)}</ul>`)

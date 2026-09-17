@@ -87,6 +87,21 @@ export function render(slide, opts = {}) {
     })
     .join("");
 
+  // Illustration optionnelle (slide.atouts[].image) : révélée en même
+  // temps que la dernière puce de l'atout (pas un état à part) — toujours
+  // rendue dès l'arrivée sur l'atout (opacity:0 via --invisible) pour que
+  // .atouts__content, centré verticalement, ne saute pas de position au
+  // moment où elle apparaît (même principe que .atouts__bullet--invisible
+  // ci-dessus).
+  const bulletsLen = (atout.bullets || []).length;
+  const showImage = visibleCount >= bulletsLen;
+  const imageEntering = animate && showImage && bulletsLen > 0;
+  const imageHtml = atout.image
+    ? `
+      <img class="atouts__image${showImage ? "" : " atouts__image--invisible"}${imageEntering ? " is-entering" : ""}" src="${escapeHtml(atout.image)}" alt="${escapeHtml(atout.imageAlt || "")}"${imageEntering ? " data-reveal" : ""}>
+    `
+    : "";
+
   return `
     <div class="atouts">
       ${renderChapRail(slide)}
@@ -104,6 +119,7 @@ export function render(slide, opts = {}) {
         <div class="atouts__content${atoutEntering ? " is-entering" : ""}"${atoutEntering ? " data-reveal" : ""}>
           <span class="atouts__kicker">${escapeHtml((atout.label || "").toUpperCase())}</span>
           <div class="atouts__bullets">${bullets}</div>
+          ${imageHtml}
         </div>
       </div>
     </div>
