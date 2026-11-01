@@ -34,7 +34,7 @@ export function render(slide, opts = {}) {
   //
   // Une puce peut porter insertsAfter: [{type:"budget", index}, ...] ou
   // {type:"headQuestion", preco} — cas d'usage ponctuel (ex.
-  // gaelle-pigot.json) où une ligne de budget et/ou la 1ère question
+  // client-B.json) où une ligne de budget et/ou la 1ère question
   // d'une préconisation (potentiellement une AUTRE, ou celle-ci) doivent
   // être révélées à des clics dédiés, juste après cette puce, plutôt
   // qu'à leur tour naturel. Chaque entrée d'insertsAfter RÉSERVE son
@@ -100,7 +100,7 @@ export function render(slide, opts = {}) {
 
     // Une puce est en général une simple chaîne. Elle peut aussi être un
     // objet { texte, accent, insertsAfter } — cas d'usage ponctuel (ex.
-    // gaelle-pigot.json) où une puce précise doit se distinguer (accent
+    // client-B.json) où une puce précise doit se distinguer (accent
     // "or") du reste, comme la ligne de budget ci-dessus.
     const bulletEntries = bulletsArr.map((b, bi) => ({
       texte: typeof b === "string" ? b : b.texte,
@@ -127,7 +127,7 @@ export function render(slide, opts = {}) {
   // pour tous les clients existants). Elle peut aussi être un objet
   // { texte, accent } dont la révélation est différée via insertsAfter
   // sur une puce (voir plus haut, budgetTargets) — cas d'usage ponctuel
-  // (ex. gaelle-pigot.json) où une ligne doit se distinguer (accent
+  // (ex. client-B.json) où une ligne doit se distinguer (accent
   // "or") et n'apparaître qu'après une puce précise, plutôt qu'avec le
   // reste de l'intro. Toujours rendue dans le flux (même principe
   // --invisible qu'ailleurs sur cette slide) : ne redéplace jamais le

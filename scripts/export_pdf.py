@@ -9,7 +9,7 @@ screenshot.py pour le setup initial) :
 
     .venv/bin/python3 scripts/export_pdf.py <client> <slide-ref> --out fichier.pdf
 
-<client>    : nom de fichier dans data/clients/ sans extension (ex: bretaudeau)
+<client>    : nom de fichier dans data/clients/ sans extension (ex: nom-client)
 <slide-ref> : index 1-indexé dans deck.slides (ex: 21), OU id de slide
               (ex: cloture-reflexion), OU mot-clé "premiere"/"derniere"/
               "avant-derniere"

@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Accompagnement patrimonial",
-    "client": "Ambroise Marche",
+    "client": "Prénom Nom",
     "date": "2026-08-28",
     "chapitres": [
       {
@@ -22,7 +22,7 @@
     {
       "id": "cover",
       "type": "cover",
-      "kicker": "Ambroise Marche",
+      "kicker": "Prénom Nom",
       "title": "Accompagnement patrimonial"
     },
     {

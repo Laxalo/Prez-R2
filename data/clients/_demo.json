@@ -235,6 +235,13 @@
       ]
     },
     {
+      "id": "av-performances-classes-actifs",
+      "type": "image-pleine",
+      "chapitreActif": 2,
+      "image": "assets/performances-calendaires-classes-actifs.jpeg",
+      "imageAlt": "Performances calendaires des principales classes d'actifs, 2016-2025"
+    },
+    {
       "id": "av-impact-40",
       "type": "impact-fiscal",
       "chapitreActif": 2,
@@ -686,6 +693,7 @@
     {
       "id": "scpi-financement",
       "type": "scpi-financement",
+      "masqueeParDefaut": true,
       "chapitreActif": 2,
       "titre": "Investir en financement",
       "sousTitre": "L'effet de levier décuple le patrimoine immobilier constitué, pour un même effort d'épargne",
@@ -1207,7 +1215,7 @@
       "kicker": "En synthèse",
       "titre": "Le plan d'épargne retraite",
       "picto": "as-de-coeur",
-      "lead": "Un placement qui combine retraite, fiscalité, prévoyance et transmission.",
+      "lead": "Un outil de prévoyance dopé à l'économie d'impôts.",
       "regles": [
         {
           "numero": "1",

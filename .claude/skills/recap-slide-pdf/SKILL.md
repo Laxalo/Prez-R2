@@ -7,7 +7,7 @@ Objectif : produire un PDF d'UNE slide du deck (pas toute la présentation), fid
 
 ## Étapes
 
-1. **Identifier le client et la slide.** Le fichier source est `data/clients/<nom>.json` (slug en minuscules, ex. `bretaudeau`). Si Victor décrit la slide en langage naturel ("l'avant-dernière", "la slide de clôture", "la slide SCPI financement"), retrouve son id ou sa position dans `deck["slides"]` — inspecte le JSON si besoin (`python3 -c "import json; ..."`) plutôt que de deviner.
+1. **Identifier le client et la slide.** Le fichier source est `data/clients/<nom>.json` (slug en minuscules, ex. `nom-client`). Si Victor décrit la slide en langage naturel ("l'avant-dernière", "la slide de clôture", "la slide SCPI financement"), retrouve son id ou sa position dans `deck["slides"]` — inspecte le JSON si besoin (`python3 -c "import json; ..."`) plutôt que de deviner.
 
 2. **Vérifier l'environnement Playwright.** Le repo utilise un `.venv` local (gitignored) pour Playwright — ne PAS utiliser le Python système.
    ```
@@ -35,7 +35,7 @@ Objectif : produire un PDF d'UNE slide du deck (pas toute la présentation), fid
    ```
    Relis ce PNG (outil Read) pour confirmer que c'est la bonne slide, complète, sans point de navigation ni bordure blanche. Supprime le PNG de contrôle une fois vérifié (fichier de travail, pas un livrable).
 
-5. **Ranger le fichier final.** Si un dossier client existe sous `PRO/METIER/Clients/<Nom Prénom>/` (chercher par correspondance de mots avec `meta.client` du JSON — ex. `meta.client: "Paul Bretaudeau"` → dossier `Bretaudeau Paul`), copie le PDF dedans avec un nom clair (ex. le titre de la slide : `Préconisations patrimoniales.pdf`). Sinon, demande où le ranger plutôt que de deviner. Envoie aussi le fichier à Victor via l'outil d'envoi de fichier.
+5. **Ranger le fichier final.** Si un dossier client existe sous `PRO/METIER/Clients/<Nom Prénom>/` (chercher par correspondance de mots avec `meta.client` du JSON — ex. `meta.client: "Prénom Nom"` → dossier `Nom Prénom`), copie le PDF dedans avec un nom clair (ex. le titre de la slide : `Préconisations patrimoniales.pdf`). Sinon, demande où le ranger plutôt que de deviner. Envoie aussi le fichier à Victor via l'outil d'envoi de fichier.
 
 ## Pièges déjà rencontrés
 

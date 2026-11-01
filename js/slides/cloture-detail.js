@@ -16,7 +16,7 @@ import { renderChapRail, renderATerme, isATermeList, isATermeLigne, renderStatut
 // reste à côté du nom (cloture-d__row-montant, Bodoni). Quand la
 // préconisation a versement initial ET programmé, on reprend EXACTEMENT le
 // mécanisme de cloture-reflexion.js plutôt que d'empiler les deux lignes
-// dans l'en-tête : "programmé" à côté du nom (comme une question), "initial"
+// dans l'en-tête : "initial" (1re ligne) à côté du nom, "programmé" (2e ligne)
 // accroché à la PREMIÈRE puce (cloture-d__bullet--with-question + translateY,
 // voir css/chapitre.css — c'est là, pas sur la dernière, que
 // cloture-reflexion.js pose sa 2e question quand il n'y en a qu'une en trop
@@ -34,7 +34,7 @@ export function render(slide, opts = {}) {
     const nomState = cursor++;
     // Une puce est en général une simple chaîne. Elle peut aussi être un
     // objet { texte, accent } — cas d'usage ponctuel (ex.
-    // gaelle-pigot.json), voir cloture-reflexion.js (même mécanisme).
+    // client-B.json), voir cloture-reflexion.js (même mécanisme).
     const bulletEntries = bulletsArr.map((b) => ({
       texte: typeof b === "string" ? b : b.texte,
       accent: typeof b === "string" ? null : b.accent,
@@ -52,7 +52,7 @@ export function render(slide, opts = {}) {
   // chaîne, affichée telle quelle dès l'état 0 (comportement inchangé
   // pour tous les clients existants). Elle peut aussi être un objet
   // { texte, accent, revealAfter: { preco, bullet, offset } } — cas
-  // d'usage ponctuel (ex. gaelle-pigot.json), voir cloture-reflexion.js
+  // d'usage ponctuel (ex. client-B.json), voir cloture-reflexion.js
   // (même mécanisme, dupliqué ici). offset (défaut 0) décale la
   // révélation de N clics après cette puce.
   // p.montant est en général une simple chaîne ("500 €/mois"), rendue
@@ -62,19 +62,19 @@ export function render(slide, opts = {}) {
   // peut aussi être un objet — { texte } pour un montant pas encore
   // chiffré ("à définir", même style Avenir que les questions de
   // cloture-reflexion.js), ou { programme, initial } quand la
-  // préconisation a versement initial ET programmé : "programme" reste
-  // à côté du nom (headLineHtml, visible dès la ligne), "initial" est
-  // accroché à la DERNIÈRE puce (voir bulletMontantTexte plus bas, même
+  // préconisation a versement initial ET programmé : "initial" (toujours
+  // 1re ligne) reste à côté du nom (headLineHtml), "programme" (2e ligne) est
+  // accroché à la 1ère puce (voir bulletMontantTexte plus bas, même
   // mécanisme que cloture-reflexion.js), pas empilé dans l'en-tête.
   // montant.revealAfter: { preco, bullet, offset } — cas d'usage ponctuel
-  // (ex. gaelle-pigot.json) où la mention "programme"/"texte" de l'en-tête
+  // (ex. client-B.json) où la mention "programme"/"texte" de l'en-tête
   // ne doit apparaître qu'après une puce précise (éventuellement d'une
   // AUTRE préconisation), plutôt qu'en même temps que le nom — même
   // mécanisme que budgetLineHtml ci-dessous, réutilise un état déjà
   // réservé (bulletState + offset), n'en consomme pas de nouveau.
   const headLineHtml = (montant) => {
     if (montant && typeof montant === "object") {
-      const texte = montant.texte || (montant.programme ? `Versement programmé : ${montant.programme}/mois` : null);
+      const texte = montant.texte || (montant.initial ? `Versement initial : ${montant.initial}` : null);
       if (!texte) return "";
       const target = montant.revealAfter
         ? precoMeta[montant.revealAfter.preco]?.bulletEntries[montant.revealAfter.bullet]?.bulletState + (montant.revealAfter.offset || 0)
@@ -86,10 +86,10 @@ export function render(slide, opts = {}) {
     return `<span class="cloture-d__row-montant">${escapeHtml(montant)}</span>`;
   };
 
-  // Ligne "Versement initial" accrochée à la 1ère puce, exactement comme
+  // Ligne "Versement programmé" (2e ligne, toujours après l'initial) accrochée à la 1ère puce, exactement comme
   // une bulletQuestion de cloture-reflexion.js (même classes CSS, même
-  // translateY) — jamais empilée dans l'en-tête avec "programme".
-  const bulletMontantTexte = (montant) => (montant && typeof montant === "object" && montant.initial ? `Versement initial : ${montant.initial}` : null);
+  // translateY) — jamais empilée dans l'en-tête avec "initial".
+  const bulletMontantTexte = (montant) => (montant && typeof montant === "object" && montant.programme ? `Versement programmé : ${montant.programme}/mois` : null);
 
   const budgetLineHtml = (entry) => {
     if (typeof entry === "string") {

@@ -10,7 +10,7 @@ data/deck.json
 # volontairement, jamais un client réel) sont les seules autorisées.
 data/clients/*.json
 !data/clients/_demo.json
-!data/clients/ambroise-marche.json
+!data/clients/exemple.json
 
 # PDF exportés (scripts/export_pdf.py) : contiennent les préconisations
 # réelles d'un client — même garde-fou que data/clients/*.json.
@@ -19,3 +19,4 @@ PDF/
 # Environnement Python local (Playwright/Pillow pour scripts/screenshot.py
 # et scripts/export_pdf.py) — jamais versionné, propre à chaque machine.
 .venv/
+.claude/settings.local.json

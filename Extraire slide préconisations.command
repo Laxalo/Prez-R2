@@ -67,8 +67,8 @@ if ! .venv/bin/python3 scripts/export_pdf.py "$CLIENT" "$SLIDE_REF" --out "$TMP_
 fi
 
 # Cherche le dossier client (PRO/METIER/Clients/<Nom Prénom>/) par
-# correspondance de mots avec meta.client du JSON (ex. "Gaëlle Pigot" ->
-# dossier "Pigot Gaëlle") — accents et casse ignorés, ordre des mots
+# correspondance de mots avec meta.client du JSON (ex. "Prénom Nom" ->
+# dossier "Nom Prénom") — accents et casse ignorés, ordre des mots
 # indifférent. Si rien ne correspond, le PDF reste à côté de ce script.
 CLIENTS_ROOT="$DIR/../Clients"
 DEST_DIR="$(python3 - "$CLIENT_FILE" "$CLIENTS_ROOT" <<'PYEOF'
